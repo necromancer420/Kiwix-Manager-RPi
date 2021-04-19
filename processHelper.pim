@@ -1206,14 +1206,14 @@ headbar="${YELLOW}\t*${LGREEN}[${NC} $opt ${LGREEN}]${YELLOW}*"
 			echo -e "${GREEN}Removing Shortcuts and linkages..." 
 			rm $lockfile
 			trap - INT TERM EXIT
-			#sudo rm -rf "$HOME/.local/share/applications/Kiwix-Manager.desktop" 
-			#sudo rm -rf "$HOME/Desktop/Kiwix-Manager.desktop"
-			#sudo rm -rf "/usr/share/applications/Kiwix-Manager.desktop"
+			sudo rm -rf "$HOME/.local/share/applications/Kiwix-Manager.desktop" 
+			sudo rm -rf "$HOME/Desktop/Kiwix-Manager.desktop"
+			sudo rm -rf "/usr/share/applications/Kiwix-Manager.desktop"
 			sleep 1
 			echo -e "${LGREEN}--Done."
 			echo -e ""
 			echo -e "${GREEN}Removing Script and associated files..."
-			#sudo rm -rf "${DIRECTORY}"
+			sudo rm -rf "${DIRECTORY}"
 			sleep 1
 			echo -e "${LGREEN}--Process Complete!"
 			echo -e ""
