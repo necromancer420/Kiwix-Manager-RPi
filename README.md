@@ -18,7 +18,7 @@ Run the Script
 ```bash
 cd ~/Downloads
 git clone https://github.com/necromancer420/Kiwix-Manager-RPi.git
-cd Kiwix-Manager
+cd Kiwix-Manager-RPi
 chmod u+x Kiwix-Manager-setup.sh
 ./Kiwix-Manager-setup.sh
 ```
