@@ -78,7 +78,7 @@ exit; fi)
 #*********************** LOCK FILE ***************************
 #Setup a Lock so this Script only runs one instance at a time.
 cd "${DIRECTORY}"
-lockfile=Kiwix.Lock
+lockfile=.Kiwix.Lock
 if [ ! -e $lockfile ]; then
 trap "rm -f $lockfile; exit" INT TERM EXIT
 touch $lockfile
@@ -112,7 +112,7 @@ echo -e "${LCYAN}Press any key to continue..."
 read -n 1 -s
 #If the user has run the program before we load their file locations from temp file
 hostz=$(hostname -I | cut -d' ' -f1)
-FILE=kiwixmanage.txt
+FILE=.kiwixmanage.txt
 if test -f "$FILE"; then
 clear
 printf "$titlebar"
@@ -177,24 +177,24 @@ echo -e " Used for installer(or port assigned to current instance)${LCYAN}"
 echo -e ""
 read -p "Port Number: [Example: 8081]:" svcport
 #make script data save file for future instances of script
-printf "$zimlibrary\n$zimfiles\n$svcname\n$svcport" >> kiwixmanage.txt
+printf "$zimlibrary\n$zimfiles\n$svcname\n$svcport" >> .kiwixmanage.txt
 fi
 #otherwise we read from the script save file
-zimlibrary=$(sed -n '1p' kiwixmanage.txt)
-zimfiles=$(sed -n '2p' kiwixmanage.txt)
-svcname=$(sed -n '3p' kiwixmanage.txt)
-svcport=$(sed -n '4p' kiwixmanage.txt)
+zimlibrary=$(sed -n '1p' .kiwixmanage.txt)
+zimfiles=$(sed -n '2p' .kiwixmanage.txt)
+svcname=$(sed -n '3p' .kiwixmanage.txt)
+svcport=$(sed -n '4p' .kiwixmanage.txt)
 #count the number of zim files if any
-find "$zimfiles/" -type f -printf "%p\n" | tee zimfiles.tmp  2>&1 >/dev/null
+find "$zimfiles/" -type f -printf "%p\n" | tee .zimfiles.tmp  2>&1 >/dev/null
 sleep 2
 #Count zim entries in library file
 numzims=$(wc -l < "$zimlibrary/library_zim.xml")
 numzims=$(("${numzims}"-2))
 #count zim files in zim folder
-zimsfnd=$(wc -l < "zimfiles.tmp")
+zimsfnd=$(wc -l < ".zimfiles.tmp")
 sleep 1
 #remove temp file for counting zims
-rm -rf zimfiles.tmp
+rm -rf .zimfiles.tmp
 cd "${DIRECTORY}"
 #Load main Menu
 clear
@@ -674,7 +674,7 @@ headbar="${YELLOW}\t*${LGREEN}[${NC} $opt ${LGREEN}]${YELLOW}*"
 			echo -e "* Stack Exchange                                    *"
 			echo -e "*****************************************************"
 			echo -e "${GREEN}Backing up library_zim.xml..."
-			sudo cp "$zimlibrary/library_zim.xml" "$zimlibrary/library_zim.old"
+			sudo mv "$zimlibrary/library_zim.xml" "$zimlibrary/library_zim.old"
 			sleep 1
 			echo -e "  ${LGREEN}--Saved--  ${LGREY}(Saved as library_zim.old)${GREEN}"
 			echo "" 
@@ -810,7 +810,11 @@ headbar="${YELLOW}\t*${LGREEN}[${NC} $opt ${LGREEN}]${YELLOW}*"
 			#Change to subfolder directory
 			cd "$zimfiles/Stack_Exchange"
 			#Download ENTIRE folder from stack_exchange zims, newest copy only.
+			CBLINK='\033[1;36;5m'
+			procca="${CBLINK}-WORKING --- Please Wait${CYAN}"
+			echo -e "${procca}"
 			wget -nv -q --show-progress -r -np -R "*-0*.zim,index.*,index.*.*,index.html.tmp,index.html,index.htm*" -e robots=off --reject-regex="\?C=" -nH --cut-dirs=2 -c http://download.kiwix.org/zim/stack_exchange/ -P "$zimfiles/Stack_Exchange"
+			procca=""
 			sudo rm -rf "$zimfiles/Stack_Exchange/wget-log*.*"
 			echo -e "${LGREEN}  --Done.${GREEN}"
 			sleep 2
@@ -845,9 +849,13 @@ headbar="${YELLOW}\t*${LGREEN}[${NC} $opt ${LGREEN}]${YELLOW}*"
 			echo -e "${LGREEN}  --Done.${GREEN}"
 			echo ""
 			echo "Processing Library files into library_zim.xml..."
+			proccc="${CBLINK}-WORKING --- Please Wait${CYAN}"
+			echo -e "${proccc}"
 			sh ./zimlist.sh 2>&1 >/dev/null
+			$proccc=""
 			sleep 1
 			sudo rm -rf zimlist.sh
+			sudo rm -rf "$zimlibrary/library_zim.xml.sav*"
 			echo -e "${LGREEN}  --Done.${GREEN}"
 			echo ""
 			sleep 1
@@ -953,6 +961,9 @@ headbar="${YELLOW}\t*${LGREEN}[${NC} $opt ${LGREEN}]${YELLOW}*"
 			read -n 1 -s
 			cat $zimlibrary/library_zim.xml | awk '{print "- "$3" -"}' | sed 's/"//g; s/path=//' | more -d -f
 			echo -e "${YELLOW}------------END OF LIST------------"
+			echo -e ""
+			sudo kiwix-manage "$zimlibrary/library_zim.xml" show > "$HOME/Desktop/Kiwix-Catalog.txt"
+			echo -e "Printer Friendly, Catalog Version saved to Desktop"
 			echo -e "${LCYAN}Press any key to return to main menu."
 			read -n 1 -s
 			clear
@@ -1140,7 +1151,7 @@ headbar="${YELLOW}\t*${LGREEN}[${NC} $opt ${LGREEN}]${YELLOW}*"
 			./$(basename $0) && exit 
 			fi)
 			echo -e "${GREEN}Deleting File Locations Save-file"
-			sudo rm -rf kiwixmanage.txt
+			sudo rm -rf .kiwixmanage.txt
 			sleep 3
 			echo ""
 			echo -e "${LGREEN}File Deleted. You can start again and "
