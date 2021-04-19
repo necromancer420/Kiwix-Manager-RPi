@@ -1,0 +1,1298 @@
+#!/bin/bash
+#Set Window Size [80 cols | 30 rows]
+printf '\e[8;30;80t'
+#Define Colors for Script
+RED='\033[0;31m'
+NC='\033[0m'
+BLACK='\033[0;30m'
+DGREY='\033[1;30m'
+LRED='\033[1;31m'
+GREEN='\033[0;32m'
+LGREEN='\033[1;32m'
+BROWN='\033[0;33m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+LBLUE='\033[1;34m'
+PURPLE='\033[0;35m'
+LPURPLE='\033[1;35m'
+CYAN='\033[0;36m'
+LCYAN='\033[1;36m'
+LGREY='\033[0;37m'
+WHITE='\033[1;37m'
+BG_BLUE="$(tput setab 4)"
+FG_WHITE="$(tput setaf 7)"
+UNDERL='\033[4m'
+CK='\033[1;32m\xE2\x9C\x94\033[1;33m'
+#Define Title Bar for Script
+titlebar="\033[1;33m***************** \033[1;34mKiwix Manager V1.0 \033[1;33m****************
+*\033[1;34m......KK..KK..\033[0;32mIIIIII..\033[1;33mWW...WW..\033[1;31mIIIIII..\033[1;35mXX..XX......\033[1;33m*
+*\033[1;34m......KK.KK...\033[0;32m..II....\033[1;33mWW...WW..\033[1;31m..II....\033[1;35m.XXXX.......\033[1;33m*
+*\033[1;34m......KKKK....\033[0;32m..II....\033[1;33mWW.W.WW..\033[1;31m..II....\033[1;35m..XX........\033[1;33m*
+*\033[1;34m......KK.KK...\033[0;32m..II....\033[1;33mWWWWWWW..\033[1;31m..II....\033[1;35m.XXXX.......\033[1;33m*
+*\033[1;34m......KK..KK..\033[0;32mIIIIII..\033[1;33m.WW.WW...\033[1;31mIIIIII..\033[1;35mXX..XX......\033[1;33m*\n"
+#****************** CHECK IF RUN AS SUDO *********************
+errormsg="\033[1;31m***************** \033[0;31mKiwix Manager V1.0 \033[1;31m****************
+*****************************************************
+**    \033[1;34m.KK..KK..\033[1;32mIIIIII..\033[1;33mWW...WW..\033[1;31mIIIIII..\033[1;35mXX..XX.  \033[1;31m  **
+**    \033[1;34m.KK.KK...\033[1;32m..II....\033[1;33mWW...WW..\033[1;31m..II....\033[1;35m.XXXX..  \033[1;31m  **
+**    \033[1;34m.KKKK....\033[1;32m..II....\033[1;33mWW.W.WW..\033[1;31m..II....\033[1;35m..XX...  \033[1;31m  **
+**    \033[1;34m.KK.KK...\033[1;32m..II....\033[1;33mWWWWWWW..\033[1;31m..II....\033[1;35m.XXXX..  \033[1;31m  **
+**    \033[1;34m.KK..KK..\033[1;32mIIIIII..\033[1;33m.WW.WW...\033[1;31mIIIIII..\033[1;35mXX..XX.  \033[1;31m  **
+*********************\033[0;31m[ ERROR! ]\033[1;31m**********************
+*****************************************************
+********                                     ********
+********      \033[1;33mDO NOT RUN AS ROOT (SUDO)!     \033[1;31m********
+********                                     ********
+*****************************************************
+*****************************************************"
+error () {
+	printf '\033[1;31m'; echo -e "$@"; printf '\033[0m'
+}
+if [[ $EUID -eq 0 ]]; then
+	error "$errormsg"
+	exit 1;
+fi
+#****************** /CHECK IF RUN AS SUDO *********************
+#****************** / CHECK IF NOT RUN FROM HOMEDIR *********************
+homemsg="\033[1;31m***************** \033[0;31mKiwix Manager V1.0 \033[1;31m****************
+*****************************************************
+**    \033[1;34m.KK..KK..\033[1;32mIIIIII..\033[1;33mWW...WW..\033[1;31mIIIIII..\033[1;35mXX..XX.  \033[1;31m  **
+**    \033[1;34m.KK.KK...\033[1;32m..II....\033[1;33mWW...WW..\033[1;31m..II....\033[1;35m.XXXX..  \033[1;31m  **
+**    \033[1;34m.KKKK....\033[1;32m..II....\033[1;33mWW.W.WW..\033[1;31m..II....\033[1;35m..XX...  \033[1;31m  **
+**    \033[1;34m.KK.KK...\033[1;32m..II....\033[1;33mWWWWWWW..\033[1;31m..II....\033[1;35m.XXXX..  \033[1;31m  **
+**    \033[1;34m.KK..KK..\033[1;32mIIIIII..\033[1;33m.WW.WW...\033[1;31mIIIIII..\033[1;35mXX..XX.  \033[1;31m  **
+*********************\033[0;31m[ ERROR! ]\033[1;31m**********************
+*****************************************************
+******                                         ******
+******\033[1;33mMUST BE RUN FROM $HOME/Kiwix-Manager/\033[1;31m ******
+******                                         ******
+*****************************************************
+*****************************************************
+\033[1;33mcd to $HOME/Kiwix-Manager then run the script from there."
+(if [ "$PWD" != "$HOME/Kiwix-Manager" ]; 
+then 
+echo -e "$homemsg"
+exit; fi)
+#****************** / CLOSE IF NOT RUN FROM HOMEDIR *********************
+#*********************** LOCK FILE ***************************
+#Setup a Lock so this Script only runs one instance at a time.
+cd "$HOME/Kiwix-Manager"
+lockfile=Kiwix.Lock
+if [ ! -e $lockfile ]; then
+trap "rm -f $lockfile; exit" INT TERM EXIT
+touch $lockfile
+#*********************** /LOCK FILE ***************************
+#Start Script with Info-Splash
+clear
+printf "$titlebar"
+echo -e "*****************************************************"
+echo -e "*                                                   *"
+echo -e "*   This script will allow you to Install Kiwix     *"
+echo -e "*   and Download many zim files from kiwix.org      *"
+echo -e "*                                                   *"
+echo -e "* ${GREEN}If you already have Kiwix installed and haven't   ${YELLOW}*"
+echo -e "* ${GREEN}downloaded any zim files, this script will grab   ${YELLOW}*"
+echo -e "* ${GREEN}them for you AND make the library_zim.xml         ${YELLOW}*"
+echo -e "*                                                   *"
+echo -e "* ${LRED}If you already have Kiwix AND Zims downloaded     ${YELLOW}*"
+echo -e "* ${LRED}you can just make the new library_zim.xml here ${YELLOW}   *"
+echo -e "*                                                   *"
+echo -e "* ${LPURPLE}You enter your desired(or existing) location for  ${YELLOW}*"
+echo -e "* ${LPURPLE}zim files and library_zim.xml the first time this ${YELLOW}*"
+echo -e "* ${LPURPLE}script is run                                     ${YELLOW}*"
+echo -e "*                                                   *"
+echo -e "* ${CYAN}When installing, you will enter the port to serve ${YELLOW}*"
+echo -e "* ${CYAN}Kiwix on. The Library and Zim file locations you  ${YELLOW}*"
+echo -e "* ${CYAN}enter in this script will be used also.        ${YELLOW}   *"
+echo -e "*                                                   *"
+echo -e "*                  ${LGREEN} HAPPY ZIMMING!               ${YELLOW}   *"
+echo -e "*****************************************************"
+echo -e "${LCYAN}Press any key to continue..." 
+read -n 1 -s
+#If the user has run the program before we load their file locations from temp file
+hostz=$(hostname -I | cut -d' ' -f1)
+FILE=kiwixmanage.txt
+if test -f "$FILE"; then
+clear
+printf "$titlebar"
+echo -e "*****************************************************"
+echo -e " ${LGREY}Library:   ${LGREEN}--LOADING--"
+echo -e " ${LGREY}Zim Files: ${LGREEN}--LOADING--"
+echo -e " ${LGREY}Service: ${LGREEN}--LOADING-- ${LGREY}| Host: ${LGREEN}--LOADING--"
+echo -e " ${LRED}                  PLEASE WAIT...${YELLOW}"
+echo -e "${YELLOW}-----------------------------------------------------"
+#sleep 2
+#If the user hasn't run the program before we ask for file locations
+else
+clear
+printf "$titlebar"
+echo -e "*****************************************************"
+echo -e " ${LBLUE}Where will you be putting your library_zim.xml file"
+echo -e " Used for installer, or where kiwix is installed already"
+echo -e " ${LRED}DON'T USE A TRAILING / ${LCYAN}"
+echo -e ""
+read -p "Library At [Example: /mnt/server/library]:" zimlibrary
+zimlibrary=$(echo $zimlibrary | sed 's:/*$::')
+#if the directory doesn't exist we make it
+(if [ ! -e "$zimlibrary" ]; then
+sudo mkdir "$zimlibrary"
+sudo chmod u+x "$zimlibrary"
+fi)
+clear
+printf "$titlebar"
+echo -e "*****************************************************"
+echo -e " ${LPURPLE}Library:   ${CYAN}$zimlibrary/library_zim.xml${GREEN}"
+echo ""
+echo -e " ${LBLUE}Where will you be putting zim files?"
+echo -e " Used for installer.(or where kiwix is installed already)"
+echo -e " ${LRED}DON'T USE A TRAILING / ${LCYAN}"
+echo -e ""
+read -p "Files At [Example: /mnt/server/zims]:" zimfiles
+zimfiles=$(echo $zimfiles | sed 's:/*$::')
+(if [ ! -e "$zimfiles" ]; then
+sudo mkdir "$zimfiles"
+sudo chmod u+x "$zimfiles"
+fi)
+echo -e " Create a service name for the server..."
+clear
+printf "$titlebar"
+echo -e "*****************************************************"
+echo -e " ${LPURPLE}Library:   ${CYAN}$zimlibrary/library_zim.xml${GREEN}"
+echo -e " ${LPURPLE}Zim Files: ${CYAN}$zimfiles/${GREEN}"
+echo ""
+echo -e " ${LBLUE}What is the Service Name?"
+echo -e " Used for installer(or service name already in use)${LCYAN}"
+echo -e ""
+read -p "Service Name: [Example: kiwix.service]:" svcname
+clear
+printf "$titlebar"
+echo -e "*****************************************************"
+echo -e " ${LPURPLE}Library:   ${CYAN}$zimlibrary/library_zim.xml${GREEN}"
+echo -e " ${LPURPLE}Zim Files: ${CYAN}$zimfiles/${GREEN}"
+echo -e " ${LPURPLE}Service:${CYAN} $svcname ${LPURPLE}| Host: ${CYAN}$hostz:$svcport"
+echo -e ""
+echo -e " ${LBLUE}What Port is Kiwix being served on?"
+echo -e " Used for installer(or port assigned to current instance)${LCYAN}"
+echo -e ""
+read -p "Port Number: [Example: 8081]:" svcport
+#make script data save file for future instances of script
+printf "$zimlibrary\n$zimfiles\n$svcname\n$svcport" >> kiwixmanage.txt
+fi
+#otherwise we read from the script save file
+zimlibrary=$(sed -n '1p' kiwixmanage.txt)
+zimfiles=$(sed -n '2p' kiwixmanage.txt)
+svcname=$(sed -n '3p' kiwixmanage.txt)
+svcport=$(sed -n '4p' kiwixmanage.txt)
+#count the number of zim files if any
+find "$zimfiles/" -type f -printf "%p\n" | tee zimfiles.tmp  2>&1 >/dev/null
+sleep 2
+#Count zim entries in library file
+numzims=$(wc -l < "$zimlibrary/library_zim.xml")
+numzims=$(("${numzims}"-2))
+#count zim files in zim folder
+zimsfnd=$(wc -l < "zimfiles.tmp")
+sleep 1
+#remove temp file for counting zims
+rm -rf zimfiles.tmp
+cd "$HOME/Kiwix-Manager"
+#Load main Menu
+clear
+printf "$titlebar"
+echo -e "****************${LGREEN}[#### MAIN MENU ####]${YELLOW}****************"
+echo -e " ${LGREY}Library:   ${CYAN}$zimlibrary/library_zim.xml ($numzims)${GREEN}"
+echo -e " ${LGREY}Zim Files: ${CYAN}$zimfiles/ ($zimsfnd)${GREEN}"
+echo -e " ${LGREY}Service:${CYAN} $svcname ${LGREY}| Host: ${CYAN}$hostz:$svcport"
+echo -e " ${LRED}             If wrong, fix with #7.${YELLOW}"
+echo -e "-----------------------------------------------------${LGREEN}"
+echo -e "${LCYAN}"
+delsave=$(printf "\033[1;31mClear Stored files locations \033[0;37m(Script Tmp Files)\033[1;36m")
+uninstk=$(printf "\033[1;31mUninstall Kiwix Server\033[0;37m(Server, Not Zims)\033[1;36m")
+uninsta=$(printf "\033[1;31mUninstall Kiwix Manager\033[0;37m(This Script)\033[1;36m")
+quitmen=$(printf "\033[1;32mQuit\033[1;36m")
+helpmen=$(printf "\033[1;33mHelp\033[1;36m")
+installmen=$(printf "\033[0;32mInstall Kiwix\033[1;36m")
+downzim=$(printf "\033[0;32mDownload Zim Files\033[1;36m")
+viewzim=$(printf "\033[1;34mView library_zim.xml \033[0;37m($numzims Entries)\033[1;36m")
+makezim=$(printf "\033[1;34mMake library_zim.xml \033[0;37m(Scans zim files -$zimsfnd)\033[1;36m")
+restzim=$(printf "\033[1;34mRestore library_zim.xml from backup\033[1;36m")
+remzim=$(printf "\033[1;34mRemove Zim from library_zim.xml \033[1;36m")
+PS3='Your Selection: '
+options=("$installmen" "$downzim" "$viewzim" "$makezim" "$remzim" "$restzim" "$delsave" "$uninstk" "$uninsta" "$helpmen" "$quitmen")
+COLUMNS=1
+select opt in "${options[@]}"
+do
+headbar="${YELLOW}\t*${LGREEN}[${NC} $opt ${LGREEN}]${YELLOW}*"
+	case $opt in
+		"$installmen")
+			FILE2="/etc/systemd/system/$svcname"
+			if test -f "$FILE2"; then
+			clear
+			printf "$titlebar"
+			echo -e "**************${LGREEN}[#### INSTALL KIWIX ####]${YELLOW}**************"
+			echo -e "${LRED}$svcname already exists!"
+			echo -e "It will be overwritten if you continue!"
+			echo ""
+			echo -e "${LCYAN}CONTINUE [Y/N]?"
+			read input
+			(if [ "$input" == "n" ] || [ "$input" == "N" ]
+			then 
+			clear
+			rm $lockfile
+			trap - INT TERM EXIT
+			./$(basename $0) && exit
+			fi)
+			fi
+			clear
+			printf "$titlebar"
+			echo -e "**************${LGREEN}[#### INSTALL KIWIX ####]${YELLOW}**************"
+			echo -e ""
+			echo -e "${LRED} MAKE SURE YOU RAN [sudo apt update] & [sudo apt upgrade]"
+			cd "$HOME/Downloads"
+			echo -e ""
+			echo -e "${GREEN} Ready to download..."
+			echo -e " ${LCYAN}Press any key to continue...${CYAN}"
+			read -n 1 -s
+			wget -nv -q --show-progress -c https://download.kiwix.org/release/kiwix-tools/kiwix-tools_linux-armhf.tar.gz
+			sleep 1
+			echo -e ""
+			echo -e "${GREEN} Decompressing downloaded file..."
+			tar -zxvf kiwix-tools_linux-armhf.tar.gz
+			sleep 1
+			sudo mv kiwix-tools_linux-armhf-3.*.*/* /usr/local/bin
+			echo -e " Binaries Moved to /usr/local/bin/"
+			sleep 2
+			sudo rm -rf kiwix-tools_linux-armhf-3.*.*/
+			sudo rm -rf kiwix-tools_linux-armhf.tar.gz
+			echo -e "Downloaded Files and Empty folder Deleted"
+			sleep 2
+			clear
+			printf "$titlebar"
+			echo -e "**************${LGREEN}[#### INSTALL KIWIX ####]${YELLOW}**************"
+			echo -e ""
+			echo -e "${GREEN} Creating $svcname in /etc/systemd/system/"
+			printf "[Unit]\n" >> "$svcname"
+			printf "Description=Kiwix Service\n" >> "$svcname"
+			printf "After=network.target\n" >> "$svcname"
+			printf "\n" >> "$svcname"
+			printf "[Service]\n" >> "$svcname"
+			printf "Type=simple\n" >> "$svcname"
+			printf "User=root\n" >> "$svcname"
+			printf "Group=root\n" >> "$svcname"
+			printf "ExecStart=/usr/local/bin/kiwix-serve --library $zimlibrary/library_zim.xml -p $svcport\n" >> "$svcname"
+			printf "Restart=always\n" >> "$svcname"
+			printf "RestartSec=3\n" >> "$svcname"
+			printf "\n" >> "$svcname"
+			printf "[Install]\n" >> "$svcname"
+			printf "WantedBy=multi-user.target\n" >> "$svcname"
+			sudo mv "$svcname" /etc/systemd/system/
+			echo -e " Enabling $svcname (systemctl enable $svcname)"
+			sudo chmod u+x "/etc/systemd/system/$svcname"
+			sudo systemctl enable "$svcname"
+			cd "$HOME/Kiwix-Manager"
+			sleep 1
+			echo -e "--*--"
+			sleep 1
+			clear
+			printf "$titlebar"
+			echo -e "**************${LGREEN}[#### INSTALL KIWIX ####]${YELLOW}**************"
+			echo -e "${LGREEN} Kiwix Installed. You can return to the main menu, &"
+			echo -e " download the various zimfiles, which will generate"
+			echo -e " a new library_zim.xml file for you to serve out."
+			echo ""
+			echo -e "Once you have finsished adding zims, your server will be"
+			echo -e "visible at $hostz:$svcport"
+			echo -e ""
+			echo -e " ${LCYAN}Press any key to continue..."
+			read -n 1 -s
+			clear
+			rm $lockfile
+			trap - INT TERM EXIT
+			./$(basename $0) && exit
+			;;
+		"$downzim")
+			clear
+			printf "$titlebar"
+			echo -e "************${LGREEN}[#### ZIM DOWNLOAD MENU ####]${YELLOW}************"
+			echo -e " ${LGREY}Library:   ${CYAN}$zimlibrary/library_zim.xml${GREEN}"
+			echo -e " ${LGREY}Zim Files: ${CYAN}$zimfiles/${GREEN}"
+			echo -e " ${LGREY}Service:${CYAN} $svcname ${LGREY}| Host: ${CYAN}$hostz:$svcport"
+			echo -e " ${LRED}If wrong, fix with #7 on Main Menu.${YELLOW}"
+			echo -e "-----------------------------------------------------${LGREEN}"
+			echo -e "${GREEN}"
+			echo -e "Downloads selected zim(s) & adds to library_zim.xml${LCYAN}"
+			stackex=$(printf "\033[1;31mStackExchange Only\033[0;37m (Approx. 164GB)\033[1;36m")
+			allem=$(printf "\033[1;31mAll of the Above\033[0;37m(VERY VERY LARGE)\033[1;36m")
+			wikip=$(printf "\033[1;32mWikipedia Only\033[0;37m (Approx. 82GB)\033[1;36m")
+			wikib=$(printf "\033[1;32mWikiBooks Only\033[0;37m (Approx. 4.3GB)\033[1;36m")
+			wikt=$(printf "\033[1;32mWiktionary Only\033[0;37m (Approx. 5.7GB)\033[1;36m")
+			wikiv=$(printf "\033[1;32mWikiVersity Only\033[0;37m (Approx. 2.3GB)\033[1;36m")
+			wikis=$(printf "\033[1;32mWikiSpecies Only\033[0;37m (Discontinued?)\033[1;36m")
+			wikin=$(printf "\033[1;32mWikiNews Only\033[0;37m (Approx. 250MB)\033[1;36m")
+			guten=$(printf "\033[1;33mGutenberg Library Only\033[0;37m (Approx. 62GB)\033[1;36m")
+			addzimnew=$(printf "\033[1;34mAdd Zim Not Listed Above\033[1;36m")
+			mainmenu=$(printf "\033[1;35mMain Menu\033[1;36m")
+
+			PS3=' Your Selection: '
+			options2=("$wikip" "$wikib" "$wikt" "$wikiv" "$wikis" "$wikin" "$guten" "$stackex" "$allem" "$addzimnew" "$mainmenu")
+			COLUMNS=1
+		select opt2 in "${options2[@]}"
+		do
+		case $opt2 in
+
+			"$wikip")
+			clear
+			printf "$titlebar"
+			echo -e "****************${LGREEN}[#### WIKIPEDIA ####]${GREEN}****************"
+			echo ""
+			echo "Backing up library_zim.xml..."
+			sudo cp "$zimlibrary/library_zim.xml" "$zimlibrary/library_zim.old"
+			sleep 1
+			echo "  --Saved backup as library_zim.old"
+			sleep 1
+			echo "" 
+			echo "Stopping Kiwix Server..."
+			sudo systemctl stop kiwix.service
+			sleep 1
+			echo "  --Kiwix Service Stopped"
+			echo ""
+			echo "Downloading Wiki .zim files..."
+			echo "   Please wait."
+			sleep 2
+			#change to where your kiwix zims should be placed
+			cd "$zimfiles"
+			echo ""
+			#Download the zim files then add to library_xim.xml
+			echo "Adding Wikipedia"
+			wget -nv -q --show-progress -c http://download.kiwix.org/zim/wikipedia_en_all_maxi.zim
+			sudo kiwix-manage "$zimlibrary/library_zim.xml" add "$zimfiles/wikipedia_en_all_maxi.zim"
+			echo "  --Added."
+			sleep 3
+			echo "Restarting Kiwix Service..."
+			sudo systemctl start kiwix.service
+			echo "Process Complete. Script will Exit"
+			echo -e "${LCYAN}Press any key to continue..."
+			read -n 1 -s
+			clear
+			cd "$HOME/Kiwix-Manager"
+			rm $lockfile
+			trap - INT TERM EXIT
+			./$(basename $0) && exit
+			;;
+		"$wikib")
+			clear
+			printf "$titlebar"
+			echo -e "****************${LGREEN}[#### WIKIBOOKS ####]${GREEN}****************"
+			echo ""
+			echo "Backing up library_zim.xml..."
+			sudo cp "$zimlibrary/library_zim.xml" "$zimlibrary/library_zim.old"
+			sleep 1
+			echo "  --Saved backup as library_zim.old"
+			sleep 1
+			echo "" 
+			echo "Stopping Kiwix Server..."
+			sudo systemctl stop kiwix.service
+			sleep 1
+			echo "  --Kiwix Service Stopped"
+			echo ""
+			echo "Downloading Wiki .zim files..."
+			echo "   Please wait."
+			sleep 2
+			#change to where your kiwix zims should be placed
+			cd "$zimfiles"
+			echo ""
+			#Download the zim files then add to library_xim.xml
+			echo "Adding WikiBooks"
+			wget -nv -q --show-progress -c http://download.kiwix.org/zim/wikibooks_en_all_maxi.zim
+			sudo kiwix-manage "$zimlibrary/library_zim.xml" add "$zimfiles/wikibooks_en_all_maxi.zim"
+			echo "  --Added."
+			sleep 3
+			echo "Restarting Kiwix Service..."
+			sudo systemctl start kiwix.service
+			echo "Process Complete. Script will Exit"
+			echo -e "${LCYAN}Press any key to continue..."
+			read -n 1 -s
+			clear
+			cd "$HOME/Kiwix-Manager"
+			rm $lockfile
+			trap - INT TERM EXIT
+			./$(basename $0) && exit
+			;;
+		"$wikt")
+			clear
+			printf "$titlebar"
+			echo -e "****************${LGREEN}[#### WIKTIONARY ####]${GREEN}***************"
+			echo ""
+			echo "Backing up library_zim.xml..."
+			sudo cp "$zimlibrary/library_zim.xml" "$zimlibrary/library_zim.old"
+			sleep 1
+			echo "  --Saved backup as library_zim.old"
+			sleep 1
+			echo "" 
+			echo "Stopping Kiwix Server..."
+			sudo systemctl stop kiwix.service
+			sleep 1
+			echo "  --Kiwix Service Stopped"
+			echo ""
+			echo "Downloading Wiki .zim files..."
+			echo "   Please wait."
+			sleep 2
+			#change to where your kiwix zims should be placed
+			cd "$zimfiles"
+			echo ""
+			#Download the zim files then add to library_xim.xml
+			echo "Adding Wiktionary"
+			wget -nv -q --show-progress -c http://download.kiwix.org/zim/wiktionary_en_all_maxi.zim
+			sudo kiwix-manage "$zimlibrary/library_zim.xml" add "$zimfiles/wiktionary_en_all_maxi.zim"
+			echo "  --Added."
+			sleep 3
+			echo "Restarting Kiwix Service..."
+			sudo systemctl start kiwix.service
+			echo "Process Complete. Script will Exit"
+			echo -e "${LCYAN}Press any key to continue..."
+			read -n 1 -s
+			clear
+			cd "$HOME/Kiwix-Manager"
+			rm $lockfile
+			trap - INT TERM EXIT
+			./$(basename $0) && exit
+			;;
+		"$wikiv")
+			clear
+			printf "$titlebar"
+			echo -e "***************${LGREEN}[#### WIKIVERSITY ####]${GREEN}***************"
+			echo ""
+			echo "Backing up library_zim.xml..."
+			sudo cp "$zimlibrary/library_zim.xml" "$zimlibrary/library_zim.old"
+			sleep 1
+			echo "  --Saved backup as library_zim.old"
+			sleep 1
+			echo "" 
+			echo "Stopping Kiwix Server..."
+			sudo systemctl stop kiwix.service
+			sleep 1
+			echo "  --Kiwix Service Stopped"
+			echo ""
+			echo "Downloading Wiki .zim files..."
+			echo "   Please wait."
+			sleep 2
+			#change to where your kiwix zims should be placed
+			cd "$zimfiles"
+			echo ""
+			#Download the zim files then add to library_xim.xml
+			echo "Adding WikiVersity"
+			wget -nv -q --show-progress -c http://download.kiwix.org/zim/wikiversity_en_all_maxi.zim
+			sudo kiwix-manage "$zimlibrary/library_zim.xml" add "$zimfiles/wikiversity_en_all_maxi.zim"
+			echo "  --Added."
+			sleep 3
+			echo "Restarting Kiwix Service..."
+			sudo systemctl start kiwix.service
+			echo "Process Complete. Script will Exit"
+			echo -e "${LCYAN}Press any key to continue..."
+			read -n 1 -s
+			clear
+			cd "$HOME/Kiwix-Manager"
+			rm $lockfile
+			trap - INT TERM EXIT
+			./$(basename $0) && exit
+			;;
+		"$wikis")
+			clear
+			printf "$titlebar"
+			echo -e "***************${LGREEN}[#### WIKISPECIES ####]${GREEN}***************"
+			echo ""
+			echo "Backing up library_zim.xml..."
+			sudo cp "$zimlibrary/library_zim.xml" "$zimlibrary/library_zim.old"
+			sleep 1
+			echo "  --Saved backup as library_zim.old"
+			sleep 1
+			echo "" 
+			echo "Stopping Kiwix Server..."
+			sudo systemctl stop kiwix.service
+			sleep 1
+			echo "  --Kiwix Service Stopped"
+			echo ""
+			echo "Downloading Wiki .zim files..."
+			echo "   Please wait."
+			sleep 2
+			#change to where your kiwix zims should be placed
+			cd "$zimfiles"
+			echo ""
+			#Download the zim files then add to library_xim.xml
+			echo "Adding WikiSpecies"
+			wget -nv -q --show-progress -c http://download.kiwix.org/zim/wikispecies_en_all_maxi.zim
+			sudo kiwix-manage "$zimlibrary/library_zim.xml" add "$zimfiles/wikispecies_en_all_maxi.zim"
+			echo "  --Added."
+			sleep 3
+			echo "Restarting Kiwix Service..."
+			sudo systemctl start kiwix.service
+			echo "Process Complete. Script will Exit"
+			echo -e "${LCYAN}Press any key to continue..."
+			read -n 1 -s
+			clear
+			cd "$HOME/Kiwix-Manager"
+			rm $lockfile
+			trap - INT TERM EXIT
+			./$(basename $0) && exit
+			;;
+		"$wikin")
+			clear
+			printf "$titlebar"
+			echo -e "****************${LGREEN}[#### WIKINEWS ####]${GREEN}*****************"
+			echo ""
+			echo "Backing up library_zim.xml..."
+			sudo cp "$zimlibrary/library_zim.xml" "$zimlibrary/library_zim.old"
+			sleep 1
+			echo "  --Saved backup as library_zim.old"
+			sleep 1
+			echo "" 
+			echo "Stopping Kiwix Server..."
+			sudo systemctl stop kiwix.service
+			sleep 1
+			echo "  --Kiwix Service Stopped"
+			echo ""
+			echo "Downloading Wiki .zim files..."
+			echo "   Please wait."
+			sleep 2
+			#change to where your kiwix zims should be placed
+			cd "$zimfiles"
+			echo ""
+			#Download the zim files then add to library_xim.xml
+			echo "Adding WikiNews"
+			wget -nv -q --show-progress -c http://download.kiwix.org/zim/wikinews_en_all_maxi.zim
+			sudo kiwix-manage "$zimlibrary/library_zim.xml" add "$zimfiles/wikinews_en_all_maxi.zim"
+			echo "  --Added."
+			sleep 3
+			echo "Restarting Kiwix Service..."
+			sudo systemctl start kiwix.service
+			echo "Process Complete. Script will Exit"
+			echo -e "${LCYAN}Press any key to continue..."
+			read -n 1 -s
+			clear
+			cd "$HOME/Kiwix-Manager"
+			rm $lockfile
+			trap - INT TERM EXIT
+			./$(basename $0) && exit
+			;;
+		"$guten")
+			clear
+			printf "$titlebar"
+			echo -e "************${LGREEN}[#### GUTENBERG LIBRARY ####]${GREEN}************"
+			echo ""
+			echo "Backing up library_zim.xml..."
+			sudo cp "$zimlibrary/library_zim.xml" "$zimlibrary/library_zim.old"
+			sleep 1
+			echo "  --Saved backup as library_zim.old"
+			sleep 1
+			echo "" 
+			echo "Stopping Kiwix Server..."
+			sudo systemctl stop kiwix.service
+			sleep 1
+			echo "  --Kiwix Service Stopped"
+			echo ""
+			echo "Downloading Wiki .zim files..."
+			echo "   Please wait."
+			sleep 2
+			#change to where your kiwix zims should be placed
+			cd "$zimfiles"
+			echo ""
+			#Download the zim files then add to library_xim.xml
+			echo "Adding Gutenberg Library"
+			wget -nv -q --show-progress -c http://download.kiwix.org/zim/gutenberg_en_all.zim
+			sudo kiwix-manage "$zimlibrary/library_zim.xml" add "$zimfiles/gutenberg_en_all.zim"
+			echo "  --Added."
+			sleep 3
+			echo "Restarting Kiwix Service..."
+			sudo systemctl start kiwix.service
+			echo "Process Complete. Script will Exit"
+			echo -e "${LCYAN}Press any key to continue..."
+			read -n 1 -s
+			clear
+			cd "$HOME/Kiwix-Manager"
+			rm $lockfile
+			trap - INT TERM EXIT
+			./$(basename $0) && exit
+			;;			
+		"$stackex")
+			clear
+			printf "$titlebar"
+			echo -e "**************${LGREEN}[#### STACKEXCHANGE ####]${GREEN}**************"
+			echo ""
+			echo "Backing up library_zim.xml..."
+			sudo cp "$zimlibrary/library_zim.xml" "$zimlibrary/library_zim.old"
+			sleep 1
+			echo "  --Saved backup as library_zim.old"
+			sleep 1
+			echo "" 
+			echo "Stopping Kiwix Server..."
+			sudo systemctl stop kiwix.service
+			sleep 1
+			echo "  --Kiwix Service Stopped"
+			echo ""
+			echo "Downloading Stack Exchange .zim files..."
+			echo "  --Please wait."
+			sleep 2
+			echo ""
+			#Copies ENTIRE stack_exchange .zim catalog to subfolder 
+			#Change to subfolder directory
+			cd "$zimfiles/Stack_Exchange"
+			#Download ENTIRE folder from stack_exchange zims, newest copy only.
+			wget -nv -q --show-progress -r -np -R "*-0*.zim,index.*,index.*.*" -e robots=off -nH --cut-dirs=2 -c http://download.kiwix.org/zim/stack_exchange/ -P "$zimfiles/Stack_Exchange"
+			echo "  --Done."
+			sleep 2
+			#Now we copy the names of all the files downloaded into a sh file with the command to add them to the libray
+			echo "Creating Script to populate Kiwix Library XML..."
+			sleep 1
+			cd "$HOME/Kiwix-Manager"
+			find "$zimfiles/Stack_Exchange/" -type f -printf 'sudo kiwix-manage "$zimlibrary/library_zim.xml" add %p\n' | tee zimlist.sh 2>&1 >/dev/null
+			sleep 1
+			#Making the previously made sh file executable and then executing it
+			echo "Making Script Executable..."
+			sleep 1
+			sudo chmod u+x zimlist.sh
+			sleep 2
+			echo "Running Script and making library_zim.xml..."
+			./zimlist.sh &
+			sudo rm -rf zimlist.sh
+			echo "Process Complete. Script will Exit"
+			echo -e "${LCYAN}Press any key to continue..."
+			read -n 1 -s
+			clear
+			cd "$HOME/Kiwix-Manager"
+			rm $lockfile
+			trap - INT TERM EXIT
+			./$(basename $0) && exit
+			;;
+		"$allem")
+			clear
+			printf "$titlebar${YELLOW}"
+			echo -e "*****************************************************"
+			echo -e "* library_zim.xml                    |Gutenberg     *"
+			echo -e "* Wikipedia        |Wikibooks        |Wiktionary    *"
+			echo -e "* Wikiversity      |Wikispecies      |Wikinews      *"
+			echo -e "*****************************************************"
+			echo -e "* Stack Exchange                                    *"
+			echo -e "*****************************************************"
+			echo -e "${GREEN}Backing up library_zim.xml..."
+			sudo cp "$zimlibrary/library_zim.xml" "$zimlibrary/library_zim.old"
+			sleep 1
+			echo -e "  ${LGREEN}--Saved--  ${LGREY}(Saved as library_zim.old)${GREEN}"
+			echo "" 
+			echo "Stopping Kiwix Server..."
+			sudo systemctl stop kiwix.service
+			sleep 1
+			echo -e "${LGREEN}  --Kiwix Service Stopped${GREEN}"
+			echo ""
+			echo "Downloading Wiki .zim files..."
+			echo "   Please wait."
+			sleep 2
+			#change to where your kiwix zims should be placed
+			cd "$zimfiles"
+			sleep 1
+			echo ""
+			#Download the zim files then add to library_xim.xml
+			clear
+			printf "$titlebar${YELLOW}"
+			echo -e "*****************************************************"
+			echo -e "* library_zim.xml  ${LGREEN}-Backed Up-${YELLOW}       |Gutenberg     *"
+			echo -e "* Wikipedia        |Wikibooks        |Wiktionary    *"
+			echo -e "* Wikiversity      |Wikispecies      |Wikinews      *"
+			echo -e "*****************************************************"
+			echo -e "* Stack Exchange                                    *"
+			echo -e "*****************************************************"
+			echo -e "${GREEN}Adding Wikipedia${DGREY}"
+			wget -nv -q --show-progress -c http://download.kiwix.org/zim/wikipedia_en_all_maxi.zim
+			sudo kiwix-manage "$zimlibrary/library_zim.xml" add "$zimfiles/wikipedia_en_all_maxi.zim"
+			echo -e "  ${LGREEN}--Added."
+			sleep 1
+			clear
+			printf "$titlebar${YELLOW}"
+			echo -e "*****************************************************"
+			echo -e "* library_zim.xml  ${LGREEN}-Backed Up-${YELLOW}       |Gutenberg     *"
+			echo -e "* Wikipedia ${CK}      |Wikibooks        |Wiktionary    *"
+			echo -e "* Wikiversity      |Wikispecies      |Wikinews      *"
+			echo -e "*****************************************************"
+			echo -e "* Stack Exchange                                    *"
+			echo -e "*****************************************************"
+			echo -e "${GREEN}Adding Wikibooks${DGREY}"
+			wget -nv -q --show-progress -c http://download.kiwix.org/zim/wikibooks_en_all_maxi.zim
+			sudo kiwix-manage "$zimlibrary/library_zim.xml" add "$zimfiles/wikibooks_en_all_maxi.zim"
+			echo -e "  ${LGREEN}--Added."
+			sleep 1
+			clear
+			printf "$titlebar${YELLOW}"
+			echo -e "*****************************************************"
+			echo -e "* library_zim.xml  ${LGREEN}-Backed Up-${YELLOW}       |Gutenberg     *"
+			echo -e "* Wikipedia  ${CK}     |Wikibooks ${CK}      |Wiktionary    *"
+			echo -e "* Wikiversity      |Wikispecies      |Wikinews      *"
+			echo -e "*****************************************************"
+			echo -e "* Stack Exchange                                    *"
+			echo -e "*****************************************************"
+			echo -e "${GREEN}Adding Wiktionary${DGREY}"
+			wget -nv -q --show-progress -c http://download.kiwix.org/zim/wiktionary_en_all_maxi.zim
+			sudo kiwix-manage "$zimlibrary/library_zim.xml" add "$zimfiles/wiktionary_en_all_maxi.zim"
+			echo -e "  ${LGREEN}--Added."
+			sleep 1
+			clear
+			printf "$titlebar${YELLOW}"
+			echo -e "*****************************************************"
+			echo -e "* library_zim.xml  ${LGREEN}-Backed Up-${YELLOW}       |Gutenberg     *"
+			echo -e "* Wikipedia  ${CK}     |Wikibooks ${CK}      |Wiktionary ${CK}  *"
+			echo -e "* Wikiversity      |Wikispecies      |Wikinews      *"
+			echo -e "*****************************************************"
+			echo -e "* Stack Exchange                                    *"
+			echo -e "*****************************************************"
+			echo -e "${GREEN}Adding Wikiversity${DGREY}"
+			wget -nv -q --show-progress -c http://download.kiwix.org/zim/wikiversity_en_all_maxi.zim
+			sudo kiwix-manage "$zimlibrary/library_zim.xml" add "$zimfiles/wikiversity_en_all_maxi.zim"
+			echo -e "  ${LGREEN}--Added."
+			sleep 1
+			clear
+			printf "$titlebar${YELLOW}"
+			echo -e "*****************************************************"
+			echo -e "* library_zim.xml  ${LGREEN}-Backed Up-${YELLOW}       |Gutenberg     *"
+			echo -e "* Wikipedia  ${CK}     |Wikibooks ${CK}      |Wiktionary ${CK}  *"
+			echo -e "* Wikiversity ${CK}    |Wikispecies      |Wikinews      *"
+			echo -e "*****************************************************"
+			echo -e "* Stack Exchange                                    *"
+			echo -e "*****************************************************"
+			echo -e "${GREEN}Adding Wikispecies${DGREY}"
+			wget -nv -q --show-progress -c http://download.kiwix.org/zim/wikispecies_en_all_maxi.zim
+			sudo kiwix-manage "$zimlibrary/library_zim.xml" add "$zimfiles/wikispecies_en_all_maxi.zim"
+			echo -e "  ${LGREEN}--Added."
+			sleep 1
+			clear
+			printf "$titlebar${YELLOW}"
+			echo -e "*****************************************************"
+			echo -e "* library_zim.xml  ${LGREEN}-Backed Up-${YELLOW}       |Gutenberg     *"
+			echo -e "* Wikipedia  ${CK}     |Wikibooks ${CK}      |Wiktionary ${CK}  *"
+			echo -e "* Wikiversity ${CK}    |Wikispecies ${CK}    |Wikinews      *"
+			echo -e "*****************************************************"
+			echo -e "* Stack Exchange                                    *"
+			echo -e "*****************************************************"
+			echo -e "${GREEN}Adding Wikinews${DGREY}"
+			wget -nv -q --show-progress -c http://download.kiwix.org/zim/wikinews_en_all_maxi.zim
+			sudo kiwix-manage "$zimlibrary/library_zim.xml" add "$zimfiles/wikinews_en_all_maxi.zim"
+			echo -e "  ${LGREEN}--Added."
+			sleep 1
+			clear
+			printf "$titlebar${YELLOW}"
+			echo -e "*****************************************************"
+			echo -e "* library_zim.xml  ${LGREEN}-Backed Up-${YELLOW}       |Gutenberg     *"
+			echo -e "* Wikipedia  ${CK}     |Wikibooks ${CK}      |Wiktionary ${CK}  *"
+			echo -e "* Wikiversity ${CK}    |Wikispecies ${CK}    |Wikinews ${CK}    *"
+			echo -e "*****************************************************"
+			echo -e "* Stack Exchange                                    *"
+			echo -e "*****************************************************"
+			echo -e "${GREEN}Adding Gutenberg Library"
+			wget -nv -q --show-progress -c http://download.kiwix.org/zim/gutenberg_en_all.zim
+			sudo kiwix-manage "$zimlibrary/library_zim.xml" add "$zimfiles/gutenberg_en_all.zim"
+			echo -e "  ${LGREEN}--Added."
+			sleep 1
+			clear
+			printf "$titlebar${YELLOW}"
+			echo -e "*****************************************************"
+			echo -e "* library_zim.xml  ${LGREEN}-Backed Up-${YELLOW}       |Gutenberg ${CK}   *"
+			echo -e "* Wikipedia  ${CK}     |Wikibooks ${CK}      |Wiktionary ${CK}  *"
+			echo -e "* Wikiversity ${CK}    |Wikispecies ${CK}    |Wikinews ${CK}    *"
+			echo -e "*****************************************************"
+			echo -e "* Stack Exchange                                    *"
+			echo -e "*****************************************************"
+			sleep 1
+			echo -e "${GREEN}Downloading Stack Exchange .zim files..."
+			echo -e "  --Please wait...     ${LRED}A WHILE!${LGREEN}"
+			echo -e "(Scanning already downloaded files, then will start)"
+			echo -e "${LPURPLE}  *Script may seem frozen if you have a lot already"
+			echo -e "    It ISN'T!   JUST WAIT LONGER${CYAN}"
+			echo -e ""
+			sleep 1
+			#Copies ENTIRE stack_exchange .zim catalog to subfolder 
+			#Change to subfolder directory
+			cd "$zimfiles/Stack_Exchange"
+			#Download ENTIRE folder from stack_exchange zims, newest copy only.
+			wget -nv -q --show-progress -r -np -R "*-0*.zim,index.*,index.*.*,index.html.tmp,index.html,index.htm*" -e robots=off --reject-regex="\?C=" -nH --cut-dirs=2 -c http://download.kiwix.org/zim/stack_exchange/ -P "$zimfiles/Stack_Exchange"
+			sudo rm -rf "$zimfiles/Stack_Exchange/wget-log*.*"
+			echo -e "${LGREEN}  --Done.${GREEN}"
+			sleep 2
+			clear
+			printf "$titlebar${YELLOW}"
+			echo -e "*****************************************************"
+			echo -e "* library_zim.xml  ${LGREEN}-Backed Up-${YELLOW}       |Gutenberg ${CK}   *"
+			echo -e "* Wikipedia  ${CK}     |Wikibooks ${CK}      |Wiktionary ${CK}  *"
+			echo -e "* Wikiversity ${CK}    |Wikispecies ${CK}    |Wikinews ${CK}    *"
+			echo -e "*****************************************************"
+			echo -e "* Stack Exchange ${LGREEN}Downloaded in its Entirety ${CK}       ${YELLOW}*"
+			echo -e "*****************************************************"
+			#Now we copy the names of all the files downloaded into a sh file with the command to add them to the libray
+			echo ""
+			echo -e "${GREEN}Creating Script to populate Kiwix Library XML..."
+			echo "   This may take a while! Please be Patient!"
+			sleep 1
+			cd "$HOME/Kiwix-Manager"
+			find "$zimfiles/Stack_Exchange/" -type f -printf "sudo kiwix-manage $zimlibrary/library_zim.xml add %p\nsleep 1\n" | tee zimlist.sh 2>&1 >/dev/null
+			sleep 1
+			#Making the previously made sh file executable and then executing it
+			echo -e "${LGREEN}  --Done.${GREEN}"
+			echo ""
+			echo "Making Script Executable..."
+			sleep 1
+			sudo chmod u+x zimlist.sh
+			sleep 2
+			echo -e "${LGREEN}  --Done.${GREEN}"
+			echo "Stopping Kiwix Service..."
+			sudo systemctl stop kiwix.service
+			sleep 2
+			echo -e "${LGREEN}  --Done.${GREEN}"
+			echo ""
+			echo "Processing Library files into library_zim.xml..."
+			sh ./zimlist.sh 2>&1 >/dev/null
+			sleep 1
+			sudo rm -rf zimlist.sh
+			echo -e "${LGREEN}  --Done.${GREEN}"
+			echo ""
+			sleep 1
+			echo "Restarting Kiwix Service..."
+			sudo systemctl start kiwix.service
+			sleep 1
+			echo -e "${LGREEN}Process Complete."
+			echo ""
+			echo -e "${LCYAN}Press any key to continue..."
+			read -n 1 -s
+			clear
+			rm $lockfile
+			trap - INT TERM EXIT
+			./$(basename $0) && exit
+			;;
+		"$addzimnew")
+			clear
+			printf "$titlebar"
+			echo -e "***********${LGREEN}[#### ADD A ZIM NOT LISTED ####]${YELLOW}**********"
+			echo -e "${LGREEN}Enter the folder name of the zim file found at:"
+			echo -e "${LBLUE}http://download.kiwix.org/zim/"
+			echo -e ""
+			echo -e "${GREEN}Example:${LCYAN} ted"
+			echo -e " ${LGREY}(points to the tedtalk directory..."
+			echo -e "  http://download.kiwix.org/zim/ted/)"
+			echo -e ""
+			echo -e "${LPURPLE}\tDo not use the trailing / "
+			echo -e "\tOnly type the folder name itself${GREEN}"
+			read -p "http://download.kiwix.org/zim/" zimurl
+			zimurl=$(echo $zimurl | sed 's:/*$::')
+			clear
+			printf "$titlebar"
+			echo -e "***********${LGREEN}[#### ADD A ZIM NOT LISTED ####]${YELLOW}**********"
+			echo -e "${LGREEN}Enter the name of the zim file found at:"
+			echo -e "${LBLUE}http://download.kiwix.org/zim/$zimurl"
+			echo -e ""
+			echo -e "${LGREEN}}Example: ${LCYAN}ted_en_entertainment_2021-04.zim${GREEN}"
+			read -p "http://download.kiwix.org/zim/$zimurl/" zimfilename
+			clear
+			printf "$titlebar"
+			echo -e "***********${LGREEN}[#### ADD A ZIM NOT LISTED ####]${YELLOW}**********"
+			echo ""
+			echo -e "${GREEN}Backing up library_zim.xml..."
+			sleep 1
+			sudo cp "$zimlibrary/library_zim.xml" "$zimlibrary/library_zim.old"
+			echo -e "${LGREEN}  --Saved backup as library_zim.old${GREEN}"
+			sleep 1
+			echo ""
+			echo "Stopping Kiwix Server..."
+			sudo systemctl stop kiwix.service
+			sleep 1
+			echo "  --Kiwix Service Stopped"
+			echo "" 
+			echo "   Please wait."
+			sleep 2
+			#change to where your kiwix zims should be placed
+			cd "$zimfiles"
+			echo ""
+			#Download the zim files then add to library_xim.xml
+			echo -e "${CYAN}Adding $zimfilename"
+			wget -nv -q --show-progress -c "http://download.kiwix.org/zim/$zimurl/$zimfilename"
+			sudo kiwix-manage "$zimlibrary/library_zim.xml" add "$zimfiles/$zimfilename"
+			echo -e "${LGREEN}  --Added.${GREEN}"
+			sleep 3
+			echo "Restarting Kiwix Service..."
+			sudo systemctl start kiwix.service
+			cd "$HOME/Kiwix-Manager"
+			echo -e "${LGREEN}Process Complete."
+			echo -e "${LCYAN}Press any key to continue..."
+			read -n 1 -s
+			clear
+			rm $lockfile
+			trap - INT TERM EXIT
+			./$(basename $0) && exit
+			;;
+		"$mainmenu")
+			rm $lockfile
+			trap - INT TERM EXIT
+			./$(basename $0) && exit
+			;;
+		*) 
+			echo "Invalid Option $REPLY"
+			;;
+		esac
+		done
+		;;
+		"$viewzim")	
+			clear
+			printf "$titlebar"
+			echo -e "***********${LGREEN}[#### VIEW LIBRARY_ZIM.XML ####]${YELLOW}**********"
+			echo ""
+			echo -e "${LGREY}Library:   ${CYAN}$zimlibrary/library_zim.xml"
+			echo -e "${LGREY}Zim Files: ${CYAN}$zimfiles/${YELLOW}"
+			echo -e "---------------------------------------------"
+			echo "Backing up library_zim.xml..."
+			sleep 1
+			sudo cp "$zimlibrary/library_zim.xml" "$zimlibrary/library_zim.old"
+			echo -e "${LGREEN}  --Saved backup as library_zim.old"
+			sleep 2
+			echo -e ""
+			echo -e "${GREEN}There are $numzims zim files listed in your library_zim.xml."
+			echo -e "${LCYAN}Press any key to view the list...${LGREY}"
+			read -n 1 -s
+			cat $zimlibrary/library_zim.xml | awk '{print "- "$3" -"}' | sed 's/"//g; s/path=//' | more -d -f
+			echo -e "${YELLOW}------------END OF LIST------------"
+			echo -e "${LCYAN}Press any key to return to main menu."
+			read -n 1 -s
+			clear
+			cd "$HOME/Kiwix-Manager"
+			rm $lockfile
+			trap - INT TERM EXIT
+			./$(basename $0) && exit
+			;;
+		"$makezim")
+			clear
+			cd "$HOME/Kiwix-Manager"
+			printf "$titlebar"
+			echo -e "***********${LGREEN}[#### MAKE LIBRARY_ZIM.XML ####]${YELLOW}**********"
+			echo ""
+			echo -e "${LGREY}Library:   ${CYAN}$zimlibrary/library_zim.xml"
+			echo -e "${LGREY}Zim Files: ${CYAN}$zimfiles/${YELLOW}"
+			echo -e "---------------------------------------------"
+			echo "Backing up library_zim.xml..."
+			sleep 1
+			sudo cp "$zimlibrary/library_zim.xml" "$zimlibrary/library_zim.old"
+			echo -e "${LGREEN}  --Saved backup as library_zim.old"
+			echo ""
+			echo -e "${LGREY}(If you have zims not showing after repeated tries,"
+			echo -e "its likely the Kiwix-Manage software from kiwix.org not"
+			echo -e "having an entry for that zim. This script can't fix that.)"
+			echo -e "${LBLUE}https://github.com/kiwix/kiwix-tools"
+			echo -e ""
+			echo -e "${LCYAN}Delete library_zim.xml & Scan zim files to make a new one [Y/N]?"
+			read inputx
+			(if [ "$inputx" == "n" ] || [ "$inputx" == "N" ]
+			then
+			clear
+			cd "$HOME/Kiwix-Manager"
+			rm $lockfile
+			trap - INT TERM EXIT
+			./$(basename $0) && exit 
+			fi)
+			sudo rm -rf "$zimlibrary/library_zim.xml"
+			sleep 1
+			sudo touch "$zimlibrary/library_zim.xml"
+			echo "Blank library_zim.xml was created"
+			sleep 1
+			echo -e ""
+			echo -e "${GREEN}Scanning Your Zimfiles..."
+			find "$zimfiles/" -type f -printf "sudo kiwix-manage $zimlibrary/library_zim.xml add %p\nsleep 1\n" | tee zimlist.sh
+			sudo chmod u+x zimlist.sh
+			echo "Stopping Kiwix Service..."
+			sudo systemctl stop kiwix.service
+			sleep 2
+			echo "Processing Library files into library_zim.xml..."
+			./zimlist.sh -release
+			sleep 3
+			sudo rm -rf zimlist.sh
+			echo "Restarting Kiwix Service..."
+			sudo systemctl start kiwix.service
+			sleep 1
+			echo -e "${LGREEN}Process Complete."
+			echo -e ""
+			echo -e "${LCYAN}Press any key to continue..."
+			read -n 1 -s
+			clear
+			cd "$HOME/Kiwix-Manager"
+			rm $lockfile
+			trap - INT TERM EXIT
+			./$(basename $0) && exit
+			;;
+		"$remzim")
+			clear
+			printf "$titlebar"
+			echo -e "****${LGREEN}[#### REMOVE ZIMS FROM LIBRARY_ZIM.XML ####]${YELLOW}*****"
+			sudo cp "$zimlibrary/library_zim.xml" "$zimlibrary/library_zim.old"
+			echo "Backing up library_zim.xml..."
+			sleep 1
+			echo -e "${LGREEN}  --Saved backup as library_zim.old"
+			echo ""
+			echo -e "${GREEN}This will remove library entries for your zim files."
+			echo -e "You have the option to delete the zim file as well."
+			echo -e "You need to know the exact filename of the zim to be removed."
+			echo -e ""
+			echo -e "${LCYAN}Continue [Y/N]?"
+			read inputyz
+			(if [ "$inputyz" == "n" ] || [ "$inputyz" == "N" ]
+			then
+			cd "$HOME/Kiwix-Manager"
+			clear
+			rm $lockfile
+			trap - INT TERM EXIT
+			./$(basename $0) && exit 
+			fi)
+			echo -e "${GREEN}Enter the name of the zim file ${YELLOW}EXACTLY${LCYAN}"
+			read -p "Zim to Remove:" remzimfile
+			FILEz="$zimfiles/$remzimfile"
+			(if test -f "$FILEz"; then
+			echo -e "${LGREEN}--File Found"
+			sleep 1
+			zilid="$(grep $remzimfile $zimlibrary/library_zim.xml | awk '{print $2}' | sed 's/"//g; s/id=//')"
+			echo -e ""
+			echo -e "${GREEN}Deleting from library_zim.xml"
+			echo -e "${CYAN}$zilid"
+			sudo kiwix-manage "$zimlibrary/library_zim.xml" remove "$zilid"
+			sleep 1
+			echo -e ""
+			echo -e "${LGREEN}--Done.${LCYAN}"
+			echo -e "Delete associated .zim file also? [Y/N]"
+			read inputz
+			(if [ "$inputz" == "y" ] || [ "$inputz" == "Y" ]
+			then 
+			sudo rm -rf "$zimfiles/$remzimfile"
+			echo -e "${LGREEN}--Done."
+			echo ""
+			cd "$HOME/Kiwix-Manager"
+			echo -e "${LCYAN}Press any key to continue..."
+			read -n 1 -s
+			clear
+			rm $lockfile
+			trap - INT TERM EXIT
+			./$(basename $0) && exit
+			else 
+			clear
+			cd "$HOME/Kiwix-Manager"
+			rm $lockfile
+			trap - INT TERM EXIT
+			./$(basename $0) && exit
+			fi)
+			fi)
+			echo -e "${LCYAN}Press any key to continue..."
+			read -n 1 -s
+			clear
+			cd "$HOME/Kiwix-Manager"
+			rm $lockfile
+			trap - INT TERM EXIT
+			./$(basename $0) && exit
+			;;
+		"$restzim")
+			clear
+			printf "$titlebar"
+			echo -e "*********${LGREEN}[#### RESTORE LIBRARY_ZIM.XML ####]${YELLOW}*********"
+			echo ""
+			echo -e "${LGREY}Library:   ${CYAN}$zimlibrary/library_zim.xml"
+			echo -e "${LGREY}Zim Files: ${CYAN}$zimfiles/${YELLOW}"
+			echo -e "---------------------------------------------"
+			echo -e ""
+			echo -e "${GREEN}This will restore your backup copy of library_zim.xml"
+			echo -e "${LCYAN}Continue [Y/N]?"
+			read inputqz
+			(if [ "$inputqz" == "n" ] || [ "$inputqz" == "N" ]
+			then
+			cd "$HOME/Kiwix-Manager"
+			clear
+			rm $lockfile
+			trap - INT TERM EXIT
+			./$(basename $0) && exit 
+			fi)
+			sudo cp "$zimlibrary/library_zim.old" "$zimlibrary/library_zim.xml"
+			echo ""
+			echo -e "${LGREEN}  --Restored from library_zim.old successfully."
+			sleep 3
+			echo -e "${LCYAN}Press any key to continue..."
+			read -n 1 -s
+			cd "$HOME/Kiwix-Manager"
+			clear
+			rm $lockfile
+			trap - INT TERM EXIT
+			./$(basename $0) && exit
+			;;		
+		"$delsave")
+			clear
+			cd "$HOME/Kiwix-Manager"
+			printf "$titlebar"
+			echo -e "************${LGREEN}[#### DELETE SAVE FILES ####]${YELLOW}************"
+			echo ""
+			echo -e "${LGREY}Library:   ${CYAN}$zimlibrary/library_zim.xml"
+			echo -e "${LGREY}Zim Files: ${CYAN}$zimfiles/${YELLOW}"
+			echo -e "---------------------------------------------"
+			echo ""
+			echo -e "${GREEN}This will delete script temp files only."
+			echo -e "${LCYAN}Continue [Y/N]?"
+			read inputjx
+			(if [ "$inputjx" == "n" ] || [ "$inputjx" == "N" ]
+			then
+			cd "$HOME/Kiwix-Manager"
+			clear
+			rm $lockfile
+			trap - INT TERM EXIT
+			./$(basename $0) && exit 
+			fi)
+			echo -e "${GREEN}Deleting File Locations Save-file"
+			sudo rm -rf kiwixmanage.txt
+			sleep 3
+			echo ""
+			echo -e "${LGREEN}File Deleted. You can start again and "
+			echo "enter the correct file locations."
+			sleep 3
+			echo -e "${LCYAN}Press any key to continue..."
+			read -n 1 -s
+			clear
+			rm $lockfile
+			trap - INT TERM EXIT
+			./$(basename $0) && exit
+			;;
+		"$uninstk")
+			clear
+			printf "$titlebar"
+			echo -e "**********${LGREEN}[#### UNINSTALL KIWIX SERVE ####]${YELLOW}**********${LRED}"
+			echo -e ""
+			echo -e "You are about to Uninstall Kiwix Serve!"
+			echo -e "${LGREY}This will Stop/Disable $svcname, and then"
+			echo -e "remove the Kiwix-Serve Program from /usr/local/bin/"
+			echo -e ""
+			echo -e "${LCYAN}To Continue type YES ${LGREY}(YES/NO)?"
+			read inputw
+			(if [ "$inputw" == "yes" ] || [ "$inputw" == "YES" ]
+			then 
+			sudo systemctl stop "$svcname"
+			sleep 1
+			echo -e "${LGREEN}Service Stopped"
+			sudo systemctl disable "$svcname"
+			sleep 1
+			echo -e "${LGREEN}Service Disabled"
+			sudo rm -rf /usr/local/bin/kiwix-*
+			sleep 1
+			echo -e "${LGREEN}Kiwix Serve Removed"
+			sudo rm -rf /etc/systemd/system/"$svcname"
+			echo -e "Process Complete!"
+			else
+			echo -e "${LRED}Uninstall Canceled. Exiting..."
+			fi)
+			sleep 2
+			echo -e ""
+			echo -e "${LCYAN}Press any key to continue..."
+			read -n 1 -s
+			clear
+			cd "$HOME/Kiwix-Manager"
+			rm $lockfile
+			trap - INT TERM EXIT
+			./$(basename $0) && exit
+			;;
+		"$uninsta")
+			clear
+			printf "$titlebar"
+			echo -e "*********${LGREEN}[#### UNINSTALL KIWIX MANAGER ####]${YELLOW}*********${LRED}"
+			echo -e ""
+			echo -e "You are about to Uninstall Kiwix Manager!"
+			echo -e "${LGREY}(This will uninstall this script and all of its"
+			echo -e "associated files, links, and shortcuts)"
+			echo -e ""
+			echo -e "${LCYAN}To Continue type YES ${LGREY}(YES/NO)?"
+			read inputw
+			(if [ "$inputw" == "yes" ] || [ "$inputw" == "YES" ]
+			then
+			echo -e "${GREEN}Removing Shortcuts and linkages..." 
+			rm $lockfile
+			trap - INT TERM EXIT
+			#sudo rm -rf "$HOME/.local/share/applications/Kiwix-Manager.desktop" 
+			#sudo rm -rf "$HOME/Desktop/Kiwix-Manager.desktop"
+			#sudo rm -rf "/usr/share/applications/Kiwix-Manager.desktop"
+			sleep 1
+			echo -e "${LGREEN}--Done."
+			echo -e ""
+			echo -e "${GREEN}Removing Script and associated files..."
+			#sudo rm -rf "$HOME/Kiwix-Manager"
+			sleep 1
+			echo -e "${LGREEN}--Process Complete!"
+			echo -e ""
+			echo -e "${LRED}Press any key to exit..."
+			read -n 1 -s
+			procid=`ps -ef | grep Kiwix-Manager.sh | grep -v grep | awk '{print $2}'`
+			sleep 2
+			bash -c "kill -9 ${procid}" 2>&1 >/dev/null &
+			else
+			echo -e "${LRED}Uninstall Canceled. Exiting..."
+			fi)
+			sleep 2
+			echo -e ""
+			echo -e "${LCYAN}Press any key to continue..."
+			read -n 1 -s
+			clear
+			cd "$HOME/Kiwix-Manager"
+			rm $lockfile
+			trap - INT TERM EXIT
+			./$(basename $0) && exit
+			;;
+		"$helpmen")
+			clear
+			printf "$titlebar"
+			echo -e "***************${LGREEN}[#### HELP SCREEN ####]${YELLOW}***************${WHITE}"
+			fold -w 52 -s KIWIX-README | more -d
+			echo -e "${LCYAN}Press any key to continue..." 
+			read -n 1 -s
+			clear
+			cd "$HOME/Kiwix-Manager"
+			rm $lockfile
+			trap - INT TERM EXIT
+			./$(basename $0) && exit
+			;;
+		
+		"$quitmen")
+			cd "$HOME/Kiwix-Manager"
+			printf "$titlebar"
+			echo -e "****************${LGREEN}[#### GOOD BYE! ####]${YELLOW}****************${WHITE}"
+			echo ""
+			echo -e "You can now run the program from $HOME/Kiwix-Manager/Kiwix-Manager.sh"
+			rm $lockfile
+			trap - INT TERM EXIT
+			clear
+			exit
+			;;
+		*) 
+			echo "Invalid Option $REPLY"
+			;;
+
+	esac	
+done
+#************************************************** LOCK FILE TRAP *****************************************************
+cd "$HOME/Kiwix-Manager"
+rm $lockfile
+trap - INT TERM EXIT
+else
+echo -e "${LRED}***************** ${RED}Kiwix Manager V1.0 ${LRED}****************"
+echo -e "*****************************************************"
+echo -e "**    ${LBLUE}.KK..KK..${LGREEN}IIIIII..${YELLOW}WW...WW..${LRED}IIIIII..${LPURPLE}XX..XX.  ${LRED}  **"
+echo -e "**    ${LBLUE}.KK.KK...${LGREEN}..II....${YELLOW}WW...WW..${LRED}..II....${LPURPLE}.XXXX..  ${LRED}  **"
+echo -e "**    ${LBLUE}.KKKK....${LGREEN}..II....${YELLOW}WW.W.WW..${LRED}..II....${LPURPLE}..XX...  ${LRED}  **"
+echo -e "**    ${LBLUE}.KK.KK...${LGREEN}..II....${YELLOW}WWWWWWW..${LRED}..II....${LPURPLE}.XXXX..  ${LRED}  **"
+echo -e "**    ${LBLUE}.KK..KK..${LGREEN}IIIIII..${YELLOW}.WW.WW...${LRED}IIIIII..${LPURPLE}XX..XX.  ${LRED}  **"
+echo -e "*********************${RED}[ ERROR! ]${LRED}**********************"
+echo -e "*****************************************************"
+echo -e "********                                     ********"
+echo -e "******** ${YELLOW}Kiwix-Manager.sh IS ALREADY RUNNING ${LRED}********"
+echo -e "********                                     ********"
+echo -e "*****************************************************"
+echo -e "*****************************************************"
+echo -e "${LGREY}If you don't see the script running, you caan"
+echo -e "force kill the process by running the following cmd:"
+echo -e "${WHITE}ps -ef| grep Kiwix-Manager.sh | awk '{print \$2}' | xargs kill -9 "
+echo -e ""
+echo -e "${LGREY}Once the script is terminated you can safely"
+echo -e "${LRED}delete the file: ${LBLUE}Kiwix.Lock${LGREY} then restart this script."
+echo -e ""
+echo -e "${LCYAN}Press any key to exit..." 
+read -n 1 -s
+clear
+fi
+#************************************************** LOCK FILE TRAP *****************************************************
