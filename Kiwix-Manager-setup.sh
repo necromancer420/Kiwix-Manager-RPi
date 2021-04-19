@@ -18,6 +18,7 @@ mv "processHelper.pim" "${NEWDIR}/Kiwix-Manager.sh"
 mv "README.md" "${NEWDIR}/README.md"
 mv "wiki.png" "${NEWDIR}/wiki.png"
 mv "LICENSE" "${NEWDIR}/LICENSE"
+sudo rm -rf "${DIRECTORY}/_config.yml"
 sudo cp "${NEWDIR}/wiki.png" /usr/share/pixmaps/wiki.png
 sleep 1
 echo -e "${LGREEN}Files Copied"
