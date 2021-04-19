@@ -1,8 +1,8 @@
 # Kiwix-Manager-RPi
+Installs Kiwix-Serve, downloads zim files, and manages Zim Library. 
 (Made for the Raspberry Pi OS)
 
 ## Purpose
-Installs Kiwix-Serve, downloads zim files, and manages Zim Library. 
 Kiwix Manager is a simple script designed to handle all the dirty work of installing and managing a Kiwix Serve Installation on a current version of Raspberry Pi OS.
 
 ## Installation
