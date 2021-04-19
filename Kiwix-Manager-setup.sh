@@ -17,6 +17,7 @@ fi)
 mv "processHelper.pim" "$HOME/Kiwix-Manager-RPi/Kiwix-Manager.sh"
 mv "README.MD" "$HOME/Kiwix-Manager-RPi/README.MD"
 mv "wiki.png" "$HOME/Kiwix-Manager-RPi/wiki.png"
+mv "LICENSE" "$HOME/Kiwix-Manager-RPi/LICENSE"
 sudo cp "$HOME/Kiwix-Manager-RPi/wiki.png" /usr/share/pixmaps/wiki.png
 sleep 1
 echo -e "${LGREEN}Files Copied"
