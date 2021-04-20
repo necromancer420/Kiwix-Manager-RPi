@@ -23,7 +23,11 @@ WHITE='\033[1;37m'
 BG_BLUE="$(tput setab 4)"
 FG_WHITE="$(tput setaf 7)"
 UNDERL='\033[4m'
+#LGREEN Checkmark
 CK='\033[1;32m\xE2\x9C\x94\033[1;33m'
+#Define lines & bars
+starbar="*****************************************************"
+linebar="-----------------------------------------------------"
 #Define Title Bar for Script
 titlebar="\033[1;33m***************** \033[1;34mKiwix Manager V1.0 \033[1;33m****************
 *\033[1;34m......KK..KK..\033[0;32mIIIIII..\033[1;33mWW...WW..\033[1;31mIIIIII..\033[1;35mXX..XX......\033[1;33m*
@@ -54,27 +58,6 @@ if [[ $EUID -eq 0 ]]; then
 	exit 1;
 fi
 #****************** /CHECK IF RUN AS SUDO *********************
-#****************** / CHECK IF NOT RUN FROM HOMEDIR *********************
-homemsg="\033[1;31m***************** \033[0;31mKiwix Manager V1.0 \033[1;31m****************
-*****************************************************
-**    \033[1;34m.KK..KK..\033[1;32mIIIIII..\033[1;33mWW...WW..\033[1;31mIIIIII..\033[1;35mXX..XX.  \033[1;31m  **
-**    \033[1;34m.KK.KK...\033[1;32m..II....\033[1;33mWW...WW..\033[1;31m..II....\033[1;35m.XXXX..  \033[1;31m  **
-**    \033[1;34m.KKKK....\033[1;32m..II....\033[1;33mWW.W.WW..\033[1;31m..II....\033[1;35m..XX...  \033[1;31m  **
-**    \033[1;34m.KK.KK...\033[1;32m..II....\033[1;33mWWWWWWW..\033[1;31m..II....\033[1;35m.XXXX..  \033[1;31m  **
-**    \033[1;34m.KK..KK..\033[1;32mIIIIII..\033[1;33m.WW.WW...\033[1;31mIIIIII..\033[1;35mXX..XX.  \033[1;31m  **
-*********************\033[0;31m[ ERROR! ]\033[1;31m**********************
-*****************************************************
-******                                         ******
-******\033[1;33mMUST BE RUN FROM $HOME/Kiwix-Manager/\033[1;31m ******
-******                                         ******
-*****************************************************
-*****************************************************
-\033[1;33mcd to $HOME/Kiwix-Manager then run the script from there."
-(if [ "$PWD" != "${DIRECTORY}" ]; 
-then 
-echo -e "$homemsg"
-exit; fi)
-#****************** / CLOSE IF NOT RUN FROM HOMEDIR *********************
 #*********************** LOCK FILE ***************************
 #Setup a Lock so this Script only runs one instance at a time.
 cd "${DIRECTORY}"
@@ -83,10 +66,11 @@ if [ ! -e $lockfile ]; then
 trap "rm -f $lockfile; exit" INT TERM EXIT
 touch $lockfile
 #*********************** /LOCK FILE ***************************
+#*********************** MAIN SCRIPT ***************************
 #Start Script with Info-Splash
 clear
 printf "$titlebar"
-echo -e "*****************************************************"
+echo -e "$starbar"
 echo -e "*                                                   *"
 echo -e "*   This script will allow you to Install Kiwix     *"
 echo -e "*   and Download many zim files from kiwix.org      *"
@@ -107,7 +91,7 @@ echo -e "* ${CYAN}Kiwix on. The Library and Zim file locations you  ${YELLOW}*"
 echo -e "* ${CYAN}enter in this script will be used also.        ${YELLOW}   *"
 echo -e "*                                                   *"
 echo -e "*                  ${LGREEN} HAPPY ZIMMING!               ${YELLOW}   *"
-echo -e "*****************************************************"
+echo -e "$starbar"
 echo -e "${LCYAN}Press any key to continue..." 
 read -n 1 -s
 #If the user has run the program before we load their file locations from temp file
@@ -116,18 +100,17 @@ FILE=.kiwixmanage.txt
 if test -f "$FILE"; then
 clear
 printf "$titlebar"
-echo -e "*****************************************************"
-echo -e " ${LGREY}Library:   ${LGREEN}--LOADING--"
-echo -e " ${LGREY}Zim Files: ${LGREEN}--LOADING--"
-echo -e " ${LGREY}Service: ${LGREEN}--LOADING-- ${LGREY}| Host: ${LGREEN}--LOADING--"
+echo -e "$starbar"
+echo -e " ${LGREY}Library:${LGREEN} --LOADING--"
+echo -e " ${LGREY}Storage:${LGREEN} --LOADING--"
+echo -e " ${LGREY}Service:${LGREEN} --LOADING-- ${LGREY}| Host:${LGREEN} --LOADING--"
 echo -e " ${LRED}                  PLEASE WAIT...${YELLOW}"
-echo -e "${YELLOW}-----------------------------------------------------"
-#sleep 2
+echo -e "$linebar"
 #If the user hasn't run the program before we ask for file locations
 else
 clear
 printf "$titlebar"
-echo -e "*****************************************************"
+echo -e "$starbar"
 echo -e " ${LBLUE}Where will you be putting your library_zim.xml file"
 echo -e " Used for installer, or where kiwix is installed already"
 echo -e " ${LRED}DON'T USE A TRAILING / ${LCYAN}"
@@ -141,8 +124,8 @@ sudo chmod u+x "$zimlibrary"
 fi)
 clear
 printf "$titlebar"
-echo -e "*****************************************************"
-echo -e " ${LPURPLE}Library:   ${CYAN}$zimlibrary/library_zim.xml${GREEN}"
+echo -e "$starbar"
+echo -e " ${LPURPLE}Library:${CYAN}$zimlibrary/library_zim.xml${GREEN}"
 echo ""
 echo -e " ${LBLUE}Where will you be putting zim files?"
 echo -e " Used for installer.(or where kiwix is installed already)"
@@ -157,9 +140,9 @@ fi)
 echo -e " Create a service name for the server..."
 clear
 printf "$titlebar"
-echo -e "*****************************************************"
-echo -e " ${LPURPLE}Library:   ${CYAN}$zimlibrary/library_zim.xml${GREEN}"
-echo -e " ${LPURPLE}Zim Files: ${CYAN}$zimfiles/${GREEN}"
+echo -e "$starbar"
+echo -e " ${LPURPLE}Library:${CYAN}$zimlibrary/library_zim.xml${GREEN}"
+echo -e " ${LPURPLE}Storage:${CYAN}$zimfiles/${GREEN}"
 echo ""
 echo -e " ${LBLUE}What is the Service Name?"
 echo -e " Used for installer(or service name already in use)${LCYAN}"
@@ -167,10 +150,10 @@ echo -e ""
 read -p "Service Name: [Example: kiwix.service]:" svcname
 clear
 printf "$titlebar"
-echo -e "*****************************************************"
-echo -e " ${LPURPLE}Library:   ${CYAN}$zimlibrary/library_zim.xml${GREEN}"
-echo -e " ${LPURPLE}Zim Files: ${CYAN}$zimfiles/${GREEN}"
-echo -e " ${LPURPLE}Service:${CYAN} $svcname ${LPURPLE}| Host: ${CYAN}$hostz:$svcport"
+echo -e "$starbar"
+echo -e " ${LPURPLE}Library:${CYAN}$zimlibrary/library_zim.xml${GREEN}"
+echo -e " ${LPURPLE}Storage:${CYAN}$zimfiles/${GREEN}"
+echo -e " ${LPURPLE}Service:${CYAN}$svcname ${LPURPLE}| Host:${CYAN}$hostz:$svcport"
 echo -e ""
 echo -e " ${LBLUE}What Port is Kiwix being served on?"
 echo -e " Used for installer(or port assigned to current instance)${LCYAN}"
@@ -200,11 +183,11 @@ cd "${DIRECTORY}"
 clear
 printf "$titlebar"
 echo -e "****************${LGREEN}[#### MAIN MENU ####]${YELLOW}****************"
-echo -e " ${LGREY}Library:   ${CYAN}$zimlibrary/library_zim.xml ($numzims)${GREEN}"
-echo -e " ${LGREY}Zim Files: ${CYAN}$zimfiles/ ($zimsfnd)${GREEN}"
-echo -e " ${LGREY}Service:${CYAN} $svcname ${LGREY}| Host: ${CYAN}$hostz:$svcport"
+echo -e " ${LGREY}Library:${CYAN}$zimlibrary/library_zim.xml ($numzims)${GREEN}"
+echo -e " ${LGREY}Storage:${CYAN}$zimfiles/ ($zimsfnd)${GREEN}"
+echo -e " ${LGREY}Service:${CYAN}$svcname ${LGREY}| Host:${CYAN}$hostz:$svcport"
 echo -e " ${LRED}             If wrong, fix with #7.${YELLOW}"
-echo -e "-----------------------------------------------------${LGREEN}"
+echo -e "$linebar"
 echo -e "${LCYAN}"
 delsave=$(printf "\033[1;31mClear Stored files locations \033[0;37m(Script Tmp Files)\033[1;36m")
 uninstk=$(printf "\033[1;31mUninstall Kiwix Server\033[0;37m(Server, Not Zims)\033[1;36m")
@@ -246,13 +229,26 @@ headbar="${YELLOW}\t*${LGREEN}[${NC} $opt ${LGREEN}]${YELLOW}*"
 			clear
 			printf "$titlebar"
 			echo -e "**************${LGREEN}[#### INSTALL KIWIX ####]${YELLOW}**************"
+			echo -e " ${LGREY}Library:${CYAN}$zimlibrary/library_zim.xml ($numzims)${GREEN}"
+			echo -e " ${LGREY}Storage:${CYAN}$zimfiles/ ($zimsfnd)${GREEN}"
+			echo -e " ${LGREY}Service:${CYAN}$svcname ${LGREY}| Host:${CYAN}$hostz:$svcport"
+			echo -e " ${LRED}  If wrong, DO NOT CONTINUE! --fix with #7.${YELLOW}"
+			echo -e "$linebar"
 			echo -e ""
 			echo -e "${LRED} MAKE SURE YOU RAN [sudo apt update] & [sudo apt upgrade]"
 			cd "$HOME/Downloads"
 			echo -e ""
 			echo -e "${GREEN} Ready to download..."
-			echo -e " ${LCYAN}Press any key to continue...${CYAN}"
-			read -n 1 -s
+			echo -e " ${LCYAN}Continue with installation process? [Y/N]?${CYAN}"
+			read inpuz
+			(if [ "$inpuz" == "n" ] || [ "$inpuz" == "N" ]
+			then
+			clear
+			cd "${DIRECTORY}"
+			rm $lockfile
+			trap - INT TERM EXIT
+			./$(basename $0) && exit 
+			fi)
 			wget -nv -q --show-progress -c https://download.kiwix.org/release/kiwix-tools/kiwix-tools_linux-armhf.tar.gz
 			sleep 1
 			echo -e ""
@@ -290,9 +286,7 @@ headbar="${YELLOW}\t*${LGREEN}[${NC} $opt ${LGREEN}]${YELLOW}*"
 			sudo chmod u+x "/etc/systemd/system/$svcname"
 			sudo systemctl enable "$svcname"
 			cd "${DIRECTORY}"
-			sleep 1
-			echo -e "--*--"
-			sleep 1
+			sleep 2
 			clear
 			printf "$titlebar"
 			echo -e "**************${LGREEN}[#### INSTALL KIWIX ####]${YELLOW}**************"
@@ -300,8 +294,13 @@ headbar="${YELLOW}\t*${LGREEN}[${NC} $opt ${LGREEN}]${YELLOW}*"
 			echo -e " download the various zimfiles, which will generate"
 			echo -e " a new library_zim.xml file for you to serve out."
 			echo ""
+			echo -e "${DGREY}${svcname} is not running. Adding zims via this"
+			echo -e "script will start it. If you already have a"
+			echo -e "library file and zims, you can just start the service"
+			echo -e "with: ${LGREY}sudo systemctl start ${svcname}"
+			echo -e ""
 			echo -e "Once you have finsished adding zims, your server will be"
-			echo -e "visible at $hostz:$svcport"
+			echo -e "actiated and visible at $hostz:$svcport"
 			echo -e ""
 			echo -e " ${LCYAN}Press any key to continue..."
 			read -n 1 -s
@@ -314,16 +313,18 @@ headbar="${YELLOW}\t*${LGREEN}[${NC} $opt ${LGREEN}]${YELLOW}*"
 			clear
 			printf "$titlebar"
 			echo -e "************${LGREEN}[#### ZIM DOWNLOAD MENU ####]${YELLOW}************"
-			echo -e " ${LGREY}Library:   ${CYAN}$zimlibrary/library_zim.xml${GREEN}"
-			echo -e " ${LGREY}Zim Files: ${CYAN}$zimfiles/${GREEN}"
-			echo -e " ${LGREY}Service:${CYAN} $svcname ${LGREY}| Host: ${CYAN}$hostz:$svcport"
-			echo -e " ${LRED}If wrong, fix with #7 on Main Menu.${YELLOW}"
-			echo -e "-----------------------------------------------------${LGREEN}"
-			echo -e "${GREEN}"
-			echo -e "Downloads selected zim(s) & adds to library_zim.xml${LCYAN}"
+			echo -e " ${LGREY}Library:${CYAN}$zimlibrary/library_zim.xml${GREEN}"
+			echo -e " ${LGREY}Storage:${CYAN}$zimfiles/${GREEN}"
+			echo -e " ${LGREY}Service:${CYAN}$svcname ${LGREY}| Host:${CYAN}$hostz:$svcport"
+			echo -e " ${LRED}       If wrong, fix with #7 on Main Menu${YELLOW}"
+			echo -e "$linebar"
+			echo -e "${GREEN}Downloads selected zim(s) & adds to library_zim.xml${LCYAN}"
 			stackex=$(printf "\033[1;31mStackExchange Only\033[0;37m (Approx. 164GB)\033[1;36m")
 			allem=$(printf "\033[1;31mAll of the Above\033[0;37m(VERY VERY LARGE)\033[1;36m")
-			wikip=$(printf "\033[1;32mWikipedia Only\033[0;37m (Approx. 82GB)\033[1;36m")
+			#wpsize="$(exec wc -c <$zimfiles/wikipedia_en_all_maxi.zim)"
+			#wpsize=$((($wpsize/1073741825)*44))
+			#wikip=$(printf "\033[1;32mWikipedia Only ${CK} \033[0;37m ( $wpsize GB)\033[1;36m")
+			wikip=$(printf "\033[1;32mWikipedia Only\033[0;37m (Approx. 88GB)\033[1;36m")
 			wikib=$(printf "\033[1;32mWikiBooks Only\033[0;37m (Approx. 4.3GB)\033[1;36m")
 			wikt=$(printf "\033[1;32mWiktionary Only\033[0;37m (Approx. 5.7GB)\033[1;36m")
 			wikiv=$(printf "\033[1;32mWikiVersity Only\033[0;37m (Approx. 2.3GB)\033[1;36m")
@@ -666,13 +667,13 @@ headbar="${YELLOW}\t*${LGREEN}[${NC} $opt ${LGREEN}]${YELLOW}*"
 		"$allem")
 			clear
 			printf "$titlebar${YELLOW}"
-			echo -e "*****************************************************"
+			echo -e "$starbar"
 			echo -e "* library_zim.xml                    |Gutenberg     *"
 			echo -e "* Wikipedia        |Wikibooks        |Wiktionary    *"
 			echo -e "* Wikiversity      |Wikispecies      |Wikinews      *"
-			echo -e "*****************************************************"
+			echo -e "$starbar"
 			echo -e "* Stack Exchange                                    *"
-			echo -e "*****************************************************"
+			echo -e "$starbar"
 			echo -e "${GREEN}Backing up library_zim.xml..."
 			sudo mv "$zimlibrary/library_zim.xml" "$zimlibrary/library_zim.old"
 			sleep 1
@@ -693,13 +694,13 @@ headbar="${YELLOW}\t*${LGREEN}[${NC} $opt ${LGREEN}]${YELLOW}*"
 			#Download the zim files then add to library_xim.xml
 			clear
 			printf "$titlebar${YELLOW}"
-			echo -e "*****************************************************"
+			echo -e "$starbar"
 			echo -e "* library_zim.xml  ${LGREEN}-Backed Up-${YELLOW}       |Gutenberg     *"
 			echo -e "* Wikipedia        |Wikibooks        |Wiktionary    *"
 			echo -e "* Wikiversity      |Wikispecies      |Wikinews      *"
-			echo -e "*****************************************************"
+			echo -e "$starbar"
 			echo -e "* Stack Exchange                                    *"
-			echo -e "*****************************************************"
+			echo -e "$starbar"
 			echo -e "${GREEN}Adding Wikipedia${DGREY}"
 			wget -nv -q --show-progress -c http://download.kiwix.org/zim/wikipedia_en_all_maxi.zim
 			sudo kiwix-manage "$zimlibrary/library_zim.xml" add "$zimfiles/wikipedia_en_all_maxi.zim"
@@ -707,13 +708,13 @@ headbar="${YELLOW}\t*${LGREEN}[${NC} $opt ${LGREEN}]${YELLOW}*"
 			sleep 1
 			clear
 			printf "$titlebar${YELLOW}"
-			echo -e "*****************************************************"
+			echo -e "$starbar"
 			echo -e "* library_zim.xml  ${LGREEN}-Backed Up-${YELLOW}       |Gutenberg     *"
 			echo -e "* Wikipedia ${CK}      |Wikibooks        |Wiktionary    *"
 			echo -e "* Wikiversity      |Wikispecies      |Wikinews      *"
-			echo -e "*****************************************************"
+			echo -e "$starbar"
 			echo -e "* Stack Exchange                                    *"
-			echo -e "*****************************************************"
+			echo -e "$starbar"
 			echo -e "${GREEN}Adding Wikibooks${DGREY}"
 			wget -nv -q --show-progress -c http://download.kiwix.org/zim/wikibooks_en_all_maxi.zim
 			sudo kiwix-manage "$zimlibrary/library_zim.xml" add "$zimfiles/wikibooks_en_all_maxi.zim"
@@ -721,13 +722,13 @@ headbar="${YELLOW}\t*${LGREEN}[${NC} $opt ${LGREEN}]${YELLOW}*"
 			sleep 1
 			clear
 			printf "$titlebar${YELLOW}"
-			echo -e "*****************************************************"
+			echo -e "$starbar"
 			echo -e "* library_zim.xml  ${LGREEN}-Backed Up-${YELLOW}       |Gutenberg     *"
 			echo -e "* Wikipedia  ${CK}     |Wikibooks ${CK}      |Wiktionary    *"
 			echo -e "* Wikiversity      |Wikispecies      |Wikinews      *"
-			echo -e "*****************************************************"
+			echo -e "$starbar"
 			echo -e "* Stack Exchange                                    *"
-			echo -e "*****************************************************"
+			echo -e "$starbar"
 			echo -e "${GREEN}Adding Wiktionary${DGREY}"
 			wget -nv -q --show-progress -c http://download.kiwix.org/zim/wiktionary_en_all_maxi.zim
 			sudo kiwix-manage "$zimlibrary/library_zim.xml" add "$zimfiles/wiktionary_en_all_maxi.zim"
@@ -735,13 +736,13 @@ headbar="${YELLOW}\t*${LGREEN}[${NC} $opt ${LGREEN}]${YELLOW}*"
 			sleep 1
 			clear
 			printf "$titlebar${YELLOW}"
-			echo -e "*****************************************************"
+			echo -e "$starbar"
 			echo -e "* library_zim.xml  ${LGREEN}-Backed Up-${YELLOW}       |Gutenberg     *"
 			echo -e "* Wikipedia  ${CK}     |Wikibooks ${CK}      |Wiktionary ${CK}  *"
 			echo -e "* Wikiversity      |Wikispecies      |Wikinews      *"
-			echo -e "*****************************************************"
+			echo -e "$starbar"
 			echo -e "* Stack Exchange                                    *"
-			echo -e "*****************************************************"
+			echo -e "$starbar"
 			echo -e "${GREEN}Adding Wikiversity${DGREY}"
 			wget -nv -q --show-progress -c http://download.kiwix.org/zim/wikiversity_en_all_maxi.zim
 			sudo kiwix-manage "$zimlibrary/library_zim.xml" add "$zimfiles/wikiversity_en_all_maxi.zim"
@@ -749,13 +750,13 @@ headbar="${YELLOW}\t*${LGREEN}[${NC} $opt ${LGREEN}]${YELLOW}*"
 			sleep 1
 			clear
 			printf "$titlebar${YELLOW}"
-			echo -e "*****************************************************"
+			echo -e "$starbar"
 			echo -e "* library_zim.xml  ${LGREEN}-Backed Up-${YELLOW}       |Gutenberg     *"
 			echo -e "* Wikipedia  ${CK}     |Wikibooks ${CK}      |Wiktionary ${CK}  *"
 			echo -e "* Wikiversity ${CK}    |Wikispecies      |Wikinews      *"
-			echo -e "*****************************************************"
+			echo -e "$starbar"
 			echo -e "* Stack Exchange                                    *"
-			echo -e "*****************************************************"
+			echo -e "$starbar"
 			echo -e "${GREEN}Adding Wikispecies${DGREY}"
 			wget -nv -q --show-progress -c http://download.kiwix.org/zim/wikispecies_en_all_maxi.zim
 			sudo kiwix-manage "$zimlibrary/library_zim.xml" add "$zimfiles/wikispecies_en_all_maxi.zim"
@@ -763,13 +764,13 @@ headbar="${YELLOW}\t*${LGREEN}[${NC} $opt ${LGREEN}]${YELLOW}*"
 			sleep 1
 			clear
 			printf "$titlebar${YELLOW}"
-			echo -e "*****************************************************"
+			echo -e "$starbar"
 			echo -e "* library_zim.xml  ${LGREEN}-Backed Up-${YELLOW}       |Gutenberg     *"
 			echo -e "* Wikipedia  ${CK}     |Wikibooks ${CK}      |Wiktionary ${CK}  *"
 			echo -e "* Wikiversity ${CK}    |Wikispecies ${CK}    |Wikinews      *"
-			echo -e "*****************************************************"
+			echo -e "$starbar"
 			echo -e "* Stack Exchange                                    *"
-			echo -e "*****************************************************"
+			echo -e "$starbar"
 			echo -e "${GREEN}Adding Wikinews${DGREY}"
 			wget -nv -q --show-progress -c http://download.kiwix.org/zim/wikinews_en_all_maxi.zim
 			sudo kiwix-manage "$zimlibrary/library_zim.xml" add "$zimfiles/wikinews_en_all_maxi.zim"
@@ -777,13 +778,13 @@ headbar="${YELLOW}\t*${LGREEN}[${NC} $opt ${LGREEN}]${YELLOW}*"
 			sleep 1
 			clear
 			printf "$titlebar${YELLOW}"
-			echo -e "*****************************************************"
+			echo -e "$starbar"
 			echo -e "* library_zim.xml  ${LGREEN}-Backed Up-${YELLOW}       |Gutenberg     *"
 			echo -e "* Wikipedia  ${CK}     |Wikibooks ${CK}      |Wiktionary ${CK}  *"
 			echo -e "* Wikiversity ${CK}    |Wikispecies ${CK}    |Wikinews ${CK}    *"
-			echo -e "*****************************************************"
+			echo -e "$starbar"
 			echo -e "* Stack Exchange                                    *"
-			echo -e "*****************************************************"
+			echo -e "$starbar"
 			echo -e "${GREEN}Adding Gutenberg Library"
 			wget -nv -q --show-progress -c http://download.kiwix.org/zim/gutenberg_en_all.zim
 			sudo kiwix-manage "$zimlibrary/library_zim.xml" add "$zimfiles/gutenberg_en_all.zim"
@@ -791,13 +792,13 @@ headbar="${YELLOW}\t*${LGREEN}[${NC} $opt ${LGREEN}]${YELLOW}*"
 			sleep 1
 			clear
 			printf "$titlebar${YELLOW}"
-			echo -e "*****************************************************"
+			echo -e "$starbar"
 			echo -e "* library_zim.xml  ${LGREEN}-Backed Up-${YELLOW}       |Gutenberg ${CK}   *"
 			echo -e "* Wikipedia  ${CK}     |Wikibooks ${CK}      |Wiktionary ${CK}  *"
 			echo -e "* Wikiversity ${CK}    |Wikispecies ${CK}    |Wikinews ${CK}    *"
-			echo -e "*****************************************************"
+			echo -e "$starbar"
 			echo -e "* Stack Exchange                                    *"
-			echo -e "*****************************************************"
+			echo -e "$starbar"
 			sleep 1
 			echo -e "${GREEN}Downloading Stack Exchange .zim files..."
 			echo -e "  --Please wait...     ${LRED}A WHILE!${LGREEN}"
@@ -820,13 +821,13 @@ headbar="${YELLOW}\t*${LGREEN}[${NC} $opt ${LGREEN}]${YELLOW}*"
 			sleep 2
 			clear
 			printf "$titlebar${YELLOW}"
-			echo -e "*****************************************************"
+			echo -e "$starbar"
 			echo -e "* library_zim.xml  ${LGREEN}-Backed Up-${YELLOW}       |Gutenberg ${CK}   *"
 			echo -e "* Wikipedia  ${CK}     |Wikibooks ${CK}      |Wiktionary ${CK}  *"
 			echo -e "* Wikiversity ${CK}    |Wikispecies ${CK}    |Wikinews ${CK}    *"
-			echo -e "*****************************************************"
+			echo -e "$starbar"
 			echo -e "* Stack Exchange ${LGREEN}Downloaded in its Entirety ${CK}       ${YELLOW}*"
-			echo -e "*****************************************************"
+			echo -e "$starbar"
 			#Now we copy the names of all the files downloaded into a sh file with the command to add them to the libray
 			echo ""
 			echo -e "${GREEN}Creating Script to populate Kiwix Library XML..."
@@ -1283,19 +1284,19 @@ rm $lockfile
 trap - INT TERM EXIT
 else
 echo -e "${LRED}***************** ${RED}Kiwix Manager V1.0 ${LRED}****************"
-echo -e "*****************************************************"
+echo -e "$starbar"
 echo -e "**    ${LBLUE}.KK..KK..${LGREEN}IIIIII..${YELLOW}WW...WW..${LRED}IIIIII..${LPURPLE}XX..XX.  ${LRED}  **"
 echo -e "**    ${LBLUE}.KK.KK...${LGREEN}..II....${YELLOW}WW...WW..${LRED}..II....${LPURPLE}.XXXX..  ${LRED}  **"
 echo -e "**    ${LBLUE}.KKKK....${LGREEN}..II....${YELLOW}WW.W.WW..${LRED}..II....${LPURPLE}..XX...  ${LRED}  **"
 echo -e "**    ${LBLUE}.KK.KK...${LGREEN}..II....${YELLOW}WWWWWWW..${LRED}..II....${LPURPLE}.XXXX..  ${LRED}  **"
 echo -e "**    ${LBLUE}.KK..KK..${LGREEN}IIIIII..${YELLOW}.WW.WW...${LRED}IIIIII..${LPURPLE}XX..XX.  ${LRED}  **"
 echo -e "*********************${RED}[ ERROR! ]${LRED}**********************"
-echo -e "*****************************************************"
+echo -e "$starbar"
 echo -e "********                                     ********"
 echo -e "******** ${YELLOW}Kiwix-Manager.sh IS ALREADY RUNNING ${LRED}********"
 echo -e "********                                     ********"
-echo -e "*****************************************************"
-echo -e "*****************************************************"
+echo -e "$starbar"
+echo -e "$starbar"
 echo -e "${LGREY}If you don't see the script running, you caan"
 echo -e "force kill the process by running the following cmd:"
 echo -e "${WHITE}ps -ef| grep Kiwix-Manager.sh | awk '{print \$2}' | xargs kill -9 "
