@@ -27,8 +27,14 @@ chmod u+x Kiwix-Manager-setup.sh
 
 ## Usage
 After the setup program finishes, it will run Kiwix-Manager.sh. If you close the program and need to run it again, just navigate to the Kiwix-Manager folder in your home directory, and run the script, or for your convenience a desktop icon is created for you.
+| ![Screenshot](https://github.com/necromancer420/localassets/blob/main/Kiwix-Menu-Screenshot.png) | 
+|:--:| 
+| Kiwix Manager - Main Menu |
 
 If you have already installed Kiwix, that's ok, you can download zim files and manage your library from this script anyway. Upon first run of the app, it will ask where you would like to put your library and your files (separately). You can simply point to the locations you specified when you setup Kiwix initially. If you are installing from scratch, you can use the same location for both the library and the zim files, if you'd like.
+| ![Screenshot](https://github.com/necromancer420/localassets/blob/main/Kiwix-Menu2-Screenshot.png) | 
+|:--:| 
+| Kiwix Manager - Download Menu |
 
 Kiwix-Serve will not serve an empty or missing Library file. If you have setup Kiwix and it doesn't appear to be working, you probably haven't setup your library file correctly. This script can help you with that too.
 
