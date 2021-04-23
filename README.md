@@ -27,6 +27,10 @@ chmod u+x Kiwix-Manager-setup.sh
 
 ## Usage
 After the setup program finishes, it will run Kiwix-Manager.sh. If you close the program and need to run it again, just navigate to the Kiwix-Manager folder in your home directory, and run the script, or for your convenience a desktop icon is created for you.
+```bash
+cd ~/Kiwix-Manager-RPi
+./Kiwix-Manager.sh
+```
 | ![Screenshot](https://github.com/necromancer420/localassets/blob/main/Kiwix-Menu-Screenshot.png) | 
 |:--:| 
 | Kiwix Manager - Main Menu |
@@ -38,12 +42,13 @@ If you have already installed Kiwix, that's ok, you can download zim files and m
 
 Kiwix-Serve will not serve an empty or missing Library file. If you have setup Kiwix and it doesn't appear to be working, you probably haven't setup your library file correctly. This script can help you with that too.
 
-*DO NOT RUN AS SUDO*
+## Notes
 
-```bash
-cd ~/Kiwix-Manager
-./Kiwix-Manager.sh
-```
+**DO NOT RUN AS SUDO*
+IF sudo is required during the script, it will prompt you to enter your password as per usual sudo usage, but do not start the script by using the sudo command.
+
+**New installation is highly recommended*
+Although you can use this script if you already have Kiwix-Serve installed, it is recommended to use this script for the install as well, to be sure the service is installed correctly.
 
 ## License
 [Unilicense](https://choosealicense.com/licenses/unlicense/#)
