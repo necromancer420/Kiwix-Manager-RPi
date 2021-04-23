@@ -1,5 +1,5 @@
 # Kiwix-Manager-RPi
-Installs Kiwix-Serve, downloads zim files, and manages Zim Library. 
+Installs [Kiwix-Serve](http://kiwix.org), downloads zim files, and manages Zim Library. 
 | ![Screenshot](https://github.com/necromancer420/localassets/blob/main/Kiwix-Screenshot.png) | 
 |:--:| 
 | Made for the Raspberry Pi OS (Ubuntu/Debian) |
@@ -44,10 +44,10 @@ Kiwix-Serve will not serve an empty or missing Library file. If you have setup K
 
 ## Notes
 
-> *DO NOT RUN AS SUDO*
+> **DO NOT RUN AS SUDO**
 >>If sudo is required during the script, it will prompt you to enter your password as per usual sudo usage, but do not start the script by using the sudo command.
 
-> *New installation is highly recommended*
+> **NEW INSTALL HIGHLY RECOMMENDED**
 >>Although you can use this script if you already have Kiwix-Serve installed, it is recommended to use this script for the install as well, to be sure the service is installed correctly.
 
 ## License
