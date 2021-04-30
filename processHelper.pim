@@ -188,20 +188,23 @@ echo -e " ${LGREY}Storage:${CYAN}$zimfiles/ ($zimsfnd)${GREEN}"
 echo -e " ${LGREY}Service:${CYAN}$svcname ${LGREY}| Host:${CYAN}$hostz:$svcport"
 echo -e " ${LRED}             If wrong, fix with #7.${YELLOW}"
 echo -e "$linebar"
-echo -e "${LCYAN}"
-delsave=$(printf "\033[1;31mClear Stored files locations \033[0;37m(Script Tmp Files)\033[1;36m")
-uninstk=$(printf "\033[1;31mUninstall Kiwix Server\033[0;37m(Server, Not Zims)\033[1;36m")
-uninsta=$(printf "\033[1;31mUninstall Kiwix Manager\033[0;37m(This Script)\033[1;36m")
+echo -e "${GREEN}"
+installmen=$(printf "\033[0;32mInstall Kiwix\033[0;32m")
+downzim=$(printf "\033[0;32mDownload Zim Files\033[1;34m")
+viewzim=$(printf "\033[1;34mView library_zim.xml \033[0;37m($numzims Entries)\033[1;34m")
+makezim=$(printf "\033[1;34mMake library_zim.xml \033[0;37m(Scans zim files -$zimsfnd)\033[1;34m")
+remzim=$(printf "\033[1;34mRemove Zim from library_zim.xml \033[1;34m")
+restzim=$(printf "\033[1;34mRestore library_zim.xml from backup\033[1;31m")
+delsave=$(printf "\033[1;31mClear Stored files locations \033[0;37m(Script Tmp Files)\033[1;31m")
+uninstk=$(printf "\033[1;31mUninstall Kiwix Server\033[0;37m(Server, Not Zims)\033[1;31m")
+uninsta=$(printf "\033[1;31mUninstall Kiwix Manager\033[0;37m(This Script)\033[1;35m")
+stserv=$(printf "\033[1;35mStart/Stop $svcname\033[1;35m")
+enserv=$(printf "\033[1;35mEnable/Disable $svcname at boot\033[1;33m")
+helpmen=$(printf "\033[1;33mHelp\033[1;32m")
 quitmen=$(printf "\033[1;32mQuit\033[1;36m")
-helpmen=$(printf "\033[1;33mHelp\033[1;36m")
-installmen=$(printf "\033[0;32mInstall Kiwix\033[1;36m")
-downzim=$(printf "\033[0;32mDownload Zim Files\033[1;36m")
-viewzim=$(printf "\033[1;34mView library_zim.xml \033[0;37m($numzims Entries)\033[1;36m")
-makezim=$(printf "\033[1;34mMake library_zim.xml \033[0;37m(Scans zim files -$zimsfnd)\033[1;36m")
-restzim=$(printf "\033[1;34mRestore library_zim.xml from backup\033[1;36m")
-remzim=$(printf "\033[1;34mRemove Zim from library_zim.xml \033[1;36m")
+
 PS3='Your Selection: '
-options=("$installmen" "$downzim" "$viewzim" "$makezim" "$remzim" "$restzim" "$delsave" "$uninstk" "$uninsta" "$helpmen" "$quitmen")
+options=("$installmen" "$downzim" "$viewzim" "$makezim" "$remzim" "$restzim" "$delsave" "$uninstk" "$uninsta" "$stserv" "$enserv" "$helpmen" "$quitmen")
 COLUMNS=1
 select opt in "${options[@]}"
 do
@@ -318,20 +321,20 @@ headbar="${YELLOW}\t*${LGREEN}[${NC} $opt ${LGREEN}]${YELLOW}*"
 			echo -e " ${LGREY}Service:${CYAN}$svcname ${LGREY}| Host:${CYAN}$hostz:$svcport"
 			echo -e " ${LRED}       If wrong, fix with #7 on Main Menu${YELLOW}"
 			echo -e "$linebar"
-			echo -e "${GREEN}Downloads selected zim(s) & adds to library_zim.xml${LCYAN}"
-			stackex=$(printf "\033[1;31mStackExchange Only\033[0;37m (Approx. 164GB)\033[1;36m")
-			allem=$(printf "\033[1;31mAll of the Above\033[0;37m(VERY VERY LARGE)\033[1;36m")
+			echo -e "${GREEN}Downloads selected zim(s) & adds to library_zim.xml${LGREEN}"
 			#wpsize="$(exec wc -c <$zimfiles/wikipedia_en_all_maxi.zim)"
 			#wpsize=$((($wpsize/1073741825)*44))
 			#wikip=$(printf "\033[1;32mWikipedia Only ${CK} \033[0;37m ( $wpsize GB)\033[1;36m")
-			wikip=$(printf "\033[1;32mWikipedia Only\033[0;37m (Approx. 88GB)\033[1;36m")
-			wikib=$(printf "\033[1;32mWikiBooks Only\033[0;37m (Approx. 4.3GB)\033[1;36m")
-			wikt=$(printf "\033[1;32mWiktionary Only\033[0;37m (Approx. 5.7GB)\033[1;36m")
-			wikiv=$(printf "\033[1;32mWikiVersity Only\033[0;37m (Approx. 2.3GB)\033[1;36m")
-			wikis=$(printf "\033[1;32mWikiSpecies Only\033[0;37m (Discontinued?)\033[1;36m")
-			wikin=$(printf "\033[1;32mWikiNews Only\033[0;37m (Approx. 250MB)\033[1;36m")
-			guten=$(printf "\033[1;33mGutenberg Library Only\033[0;37m (Approx. 62GB)\033[1;36m")
-			addzimnew=$(printf "\033[1;34mAdd Zim Not Listed Above\033[1;36m")
+			wikip=$(printf "\033[1;32mWikipedia Only\033[0;37m (Approx. 88GB)\033[1;32m")
+			wikib=$(printf "\033[1;32mWikiBooks Only\033[0;37m (Approx. 4.3GB)\033[1;32m")
+			wikt=$(printf "\033[1;32mWiktionary Only\033[0;37m (Approx. 5.7GB)\033[1;32m")
+			wikiv=$(printf "\033[1;32mWikiVersity Only\033[0;37m (Approx. 2.3GB)\033[1;32m")
+			wikis=$(printf "\033[1;32mWikiSpecies Only\033[0;37m (Discontinued?)\033[1;32m")
+			wikin=$(printf "\033[1;32mWikiNews Only\033[0;37m (Approx. 250MB)\033[1;33m")
+			guten=$(printf "\033[1;33mGutenberg Library Only\033[0;37m (Approx. 62GB)\033[1;31m")
+			stackex=$(printf "\033[1;31mStackExchange Only\033[0;37m (Approx. 164GB)\033[1;31m")
+			allem=$(printf "\033[1;31mAll of the Above\033[0;37m(VERY VERY LARGE)\033[1;34m")
+			addzimnew=$(printf "\033[1;34mAdd Zim Not Listed Above\033[1;35m")
 			mainmenu=$(printf "\033[1;35mMain Menu\033[1;36m")
 
 			PS3=' Your Selection: '
@@ -1247,6 +1250,66 @@ headbar="${YELLOW}\t*${LGREEN}[${NC} $opt ${LGREEN}]${YELLOW}*"
 			trap - INT TERM EXIT
 			./$(basename $0) && exit
 			;;
+		"$stserv")
+			clear
+			printf "$titlebar"
+			echo -e "***********${LGREEN}[#### START/STOP SERVICE ####]${YELLOW}************${WHITE}"
+			if (systemctl -q is-active "$svcname");
+			then
+			echo -e "${GREEN}$svcname is running..."
+			echo -e "${LRED} Stopping $svcname..."
+			sudo systemctl stop "$svcname"
+			sleep 1
+			echo -e ""
+			echo -e "${LGREEN}SERVICE STOPPED!"
+			else
+			echo -e "${LRED}$svcname is NOT running!..."
+			echo -e "${GREEN} Starting $svcname..."
+			sudo systemctl start "$svcname"
+			sleep 1
+			echo -e ""
+			echo -e "${LGREEN}SERVICE STARTED!"
+			fi
+			sleep 1 
+			echo -e ""
+			echo -e "${LCYAN}Press any key to continue..." 
+			read -n 1 -s
+			clear
+			cd "${DIRECTORY}"
+			rm $lockfile
+			trap - INT TERM EXIT
+			./$(basename $0) && exit
+			;;
+		"$enserv")
+			clear
+			printf "$titlebar"
+			echo -e "*************${LGREEN}[#### SERVICE AT BOOT ####]${YELLOW}*************${WHITE}"
+			if (systemctl -q is-enabled "$svcname");
+			then
+			echo -e "${GREEN}$svcname will run at boot"
+			echo -e "${LRED} Disabling $svcname at boot time..."
+			sudo systemctl disable "$svcname"
+			sleep 1
+			echo -e ""
+			echo -e "${LGREEN}SERVICE BOOT DISABLED!"
+			else
+			echo -e "${LRED}$svcname will NOT run at boot!..."
+			echo -e "${GREEN} Enabling $svcname at boot time..."
+			sudo systemctl enable "$svcname"
+			sleep 1
+			echo -e ""
+			echo -e "${LGREEN}SERVICE BOOT ENABLED!"
+			fi
+			sleep 1 
+			echo -e ""
+			echo -e "${LCYAN}Press any key to continue..." 
+			read -n 1 -s
+			clear
+			cd "${DIRECTORY}"
+			rm $lockfile
+			trap - INT TERM EXIT
+			./$(basename $0) && exit
+			;;	
 		"$helpmen")
 			clear
 			printf "$titlebar"
