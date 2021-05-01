@@ -2,6 +2,8 @@
 DIRECTORY="$(readlink -f "$(dirname "$0")")"
 #Set Window Size [80 cols | 30 rows]
 printf '\e[8;30;80t'
+#Set Title of Window
+printf '\033]2;Kiwix Manager v1.0\a'
 #Define Colors for Script
 RED='\033[0;31m'
 NC='\033[0m'
