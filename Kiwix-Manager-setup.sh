@@ -1,12 +1,13 @@
 #!/bin/bash
-#COPY README AND CHECK IF MAIN SCRIPT EXISTS IN HOME DIR
-#IF IT ISNT, COPY IT THERE, MAKE IT EXECUTABLE, THEN RUN IT.
+#Define colors for script
 LGREEN='\033[1;32m'
 LCYAN='\033[1;36m'
 LRED='\033[1;31m'
+#COPY README AND CHECK IF MAIN SCRIPT EXISTS IN HOME DIR
+#IF IT ISNT, COPY IT THERE, MAKE IT EXECUTABLE, THEN RUN IT.
 DIRECTORY="$(readlink -f "$(dirname "$0")")"
 NEWDIR="$HOME/Kiwix-Manager-RPi"
-(if [ ! -e "${NEWDIR}" ]; then
+ (if [ ! -e "${NEWDIR}" ]; then
 mkdir "${NEWDIR}"
 sleep 1
 echo -e "${LGREEN}Directory Created: ${NEWDIR}/"
@@ -23,7 +24,7 @@ sleep 1
 echo -e "${LGREEN}Files Copied"
 chmod u+x "${NEWDIR}/Kiwix-Manager.sh"
 echo -e "Script made Executable"
-printf " -Once zims download the 1st time, running the download option will only upate that zim if needed, otherwise it is skipped.\n\n -Unchanged zims will show no progress bar on-screen during the download script. Be calm, It works!\n\n -The library_zim.xml IS NOT overwritten each time you run this script, it is only added to, unless you choose option #5 to delete entries.\n\n -If you see a difference between number of zims and number of XML entries, it is usually due to that zim not having information on kiwix.org for their xml handler(kiwix-manage) to use." > "${NEWDIR}/KIWIX-README"
+printf " -Once zims download the first time, running the download option will only update that zim if needed, otherwise it is skipped. You can use the download option anytime just to ensure your zim file and associated library entry are up to date. (WikiNews!)\n\n -Unchanged zims will show no progress bar on-screen during the download script. Be calm, It works!\n\n -The library_zim.xml IS NOT overwritten each time you run this script, it is only added to, unless you choose option #5 to delete entries.\n\n -If you see a difference between number of zims and number of XML entries, it is usually due to that zim not having information on kiwix.org for their xml handler(kiwix-manage) to use." > "${NEWDIR}/KIWIX-README"
 rm -rf $(basename $0) 
 sleep 1
 cd "${NEWDIR}"
@@ -47,6 +48,7 @@ sleep 1
 cd "${NEWDIR}"
 echo -e ""
 echo -e "${LGREEN}You can now run the program from ${NEWDIR}/Kiwix-Manager.sh"
+echo -e " (or for your convenience, Desktop and panel shortcuts were made)"
 			echo -e ""
 			echo -e "${LCYAN}Press any key to continue..."
 			read -n 1 -s
