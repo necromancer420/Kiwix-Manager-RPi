@@ -1130,26 +1130,6 @@ headbar="${YELLOW}\t*${LGREEN}[${NC} $opt ${LGREEN}]${YELLOW}*"
 			echo -e "${LGREY}Library:   ${CYAN}$zimlibrary/library_zim.xml"
 			echo -e "${LGREY}Zim Files: ${CYAN}$zimfiles/${YELLOW}"
 			echo -e "---------------------------------------------"
-			echo -e ""
-			echo -e "${GREEN}This will restore your backup copy of library_zim.xml"
-			echo -e "${LCYAN}Continue [Y/N]?"
-			read inputqz
-			(if [ "$inputqz" == "n" ] || [ "$inputqz" == "N" ]
-			then
-			cd "${DIRECTORY}"
-			clear
-			rm $lockfile
-			trap - INT TERM EXIT
-			./$(basename $0) && exit 
-			fi)
-			clear
-			printf "$titlebar"
-			echo -e "*********${LGREEN}[#### RESTORE LIBRARY_ZIM.XML ####]${YELLOW}*********"
-			echo ""
-			echo -e "${LGREY}Library:   ${CYAN}$zimlibrary/library_zim.xml"
-			echo -e "${LGREY}Zim Files: ${CYAN}$zimfiles/${YELLOW}"
-			echo -e "---------------------------------------------"
-			echo -e ""
 			echo -e "${YELLOW}Select a backup file to restore from${GREEN}"
 			unset zoptions i
 			while IFS= read -r -d $'\0' f; do
