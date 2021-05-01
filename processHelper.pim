@@ -186,7 +186,7 @@ echo -e " ${LGREY}Storage:${CYAN}$zimfiles/ ($zimsfnd)${GREEN}"
 echo -e " ${LGREY}Service:${CYAN}$svcname ${LGREY}| Host:${CYAN}$hostz:$svcport"
 echo -e " ${LRED}             If wrong, fix with #7.${YELLOW}"
 echo -e "$linebar"
-echo -e "${GREEN}"
+echo -e "$Please Select an option to continue:{GREEN}"
 installmen=$(printf "\033[0;32mInstall Kiwix \033[1;31m(Not Installed)\033[0;32m")
 	if test -f "/usr/local/bin/kiwix-serve" ; then 
 	installmen=$(printf "\033[0;32mInstall Kiwix \033[1;32m(Installed)\033[0;32m")
