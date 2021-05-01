@@ -167,7 +167,7 @@ zimfiles=$(sed -n '2p' .kiwixmanage.txt)
 svcname=$(sed -n '3p' .kiwixmanage.txt)
 svcport=$(sed -n '4p' .kiwixmanage.txt)
 #count the number of zim files if any
-find "$zimfiles/" -type f -printf "%p\n" | tee .zimfiles.tmp  2>&1 >/dev/null
+find "$zimfiles/" -type f -name "*.zim" -printf "%p\n" | tee .zimfiles.tmp  2>&1 >/dev/null
 #Count zim entries in library file
 numzims=$(wc -l < "$zimlibrary/library_zim.xml")
 numzims=$(("${numzims}"-2))
